@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Chiles y Cereales Servín - Filtros</title>
+  <title>Chiles y Cereales Servín</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -83,8 +83,17 @@
     <h1>Chiles y Cereales Servín</h1>
   </header>
 
-  <div class="categorias" id="botones-categorias">
+  <div class="categorias">
     <button onclick="filtrar('todas')">Ver todos</button>
+    <button onclick="filtrar('Frutos secos y nueces')">Frutos secos y nueces</button>
+    <button onclick="filtrar('Botanas, snacks y frituras')">Botanas</button>
+    <button onclick="filtrar('Semillas y granos')">Semillas</button>
+    <button onclick="filtrar('Leguminosas')">Leguminosas</button>
+    <button onclick="filtrar('Camarón seco')">Camarón</button>
+    <button onclick="filtrar('Endulzantes, especias y saborizantes')">Especias</button>
+    <button onclick="filtrar('Ingredientes especiales / Repostería')">Repostería</button>
+    <button onclick="filtrar('Moles')">Moles</button>
+    <button onclick="filtrar('Alimento para animales')">Alimentos animales</button>
   </div>
 
   <div class="productos" id="productos"></div>
@@ -94,15 +103,15 @@
   <script>
     const sheetID = "1V3idgBFfpsIJdBs3Z6B8FmXOc9e6rGtF45Y_heR96B0";
     const base = `https://docs.google.com/spreadsheets/d/${sheetID}/gviz/tq?`;
-    const query = encodeURIComponent('Select A,B,C,D');
+    const query = encodeURIComponent("Select A,B,C,D");
     const url = `${base}&tq=${query}`;
 
     function filtrar(categoria) {
       document.querySelectorAll(".producto").forEach(div => {
-        if (categoria === 'todas' || div.dataset.cat === categoria) {
-          div.style.display = 'block';
+        if (categoria === "todas" || div.dataset.cat === categoria) {
+          div.style.display = "block";
         } else {
-          div.style.display = 'none';
+          div.style.display = "none";
         }
       });
     }
@@ -112,36 +121,22 @@
       .then(rep => {
         const data = JSON.parse(rep.substr(47).slice(0, -2));
         const productosDiv = document.getElementById("productos");
-        const catDiv = document.getElementById("botones-categorias");
-        const categoriasSet = new Set();
 
         data.table.rows.forEach(row => {
           const nombre = row.c[0]?.v || "";
-          const categoria = (row.c[1]?.v || "").toLowerCase().replace(/ /g, "-");
+          const categoria = row.c[1]?.v || "";
           const precio = row.c[2]?.v || "";
-          const imagen = row.c[3]?.v || "https://via.placeholder.com/200x150?text=Sin+Imagen";
+          const imagen = row.c[3]?.v || "https://via.placeholder.com/200x150?text=Producto";
 
-          categoriasSet.add(categoria);
-
-          const productoHTML = `
+          const card = `
             <div class="producto" data-cat="${categoria}">
               <img src="${imagen}" alt="${nombre}">
               <h3>${nombre}</h3>
               <p class="precio">$${precio}/kg</p>
             </div>
           `;
-          productosDiv.innerHTML += productoHTML;
+          productosDiv.innerHTML += card;
         });
-
-        categoriasSet.forEach(cat => {
-          const btn = document.createElement("button");
-          btn.textContent = cat.replace(/-/g, " ");
-          btn.onclick = () => filtrar(cat);
-          catDiv.appendChild(btn);
-        });
-      })
-      .catch(err => {
-        console.error("Error cargando datos de Google Sheets", err);
       });
   </script>
 
