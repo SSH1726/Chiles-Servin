@@ -110,13 +110,13 @@
 
   <script>
     function normalizar(str) {
-      return str.toLowerCase().normalize("NFD").replace(/\s+/g, " ").trim().replace(/[\u0300-\u036f]/g, "");
+      return (str || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
     }
 
     function filtrar(categoria) {
       const catNormalizada = normalizar(categoria);
       document.querySelectorAll(".producto").forEach(div => {
-        const catProd = normalizar(div.dataset.cat || "");
+        const catProd = div.dataset.cat || "";
         if (catNormalizada === "todas" || catProd === catNormalizada) {
           div.style.display = "block";
         } else {
@@ -138,7 +138,8 @@
 
         data.table.rows.forEach(row => {
           const nombre = row.c[0]?.v || "";
-          const categoria = row.c[1]?.v || "";
+          const categoriaRaw = row.c[1]?.v || "";
+          const categoria = normalizar(categoriaRaw);
           const precio = row.c[2]?.v || "";
           const imagen = row.c[3]?.v || "https://via.placeholder.com/200x150?text=Producto";
 
