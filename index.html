@@ -1,0 +1,109 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Chiles y Cereales Servín - Productos</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background-color: #fdfcf9;
+    }
+    header {
+      background-color: #5c432c;
+      color: white;
+      padding: 1em;
+      text-align: center;
+    }
+    .productos {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      padding: 1em;
+    }
+    .producto {
+      background-color: white;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      width: 220px;
+      padding: 1em;
+      box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    .producto img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+    }
+    .precio {
+      color: green;
+      font-weight: bold;
+      margin-top: 0.5em;
+    }
+    .whatsapp {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: #25d366;
+      color: white;
+      padding: 12px 18px;
+      border-radius: 50px;
+      text-decoration: none;
+      font-weight: bold;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+    @media screen and (max-width: 600px) {
+      .producto {
+        width: 90%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Chiles y Cereales Servín</h1>
+  </header>
+
+  <div class="productos" id="productos"></div>
+
+  <a class="whatsapp" href="https://wa.me/5214421234567?text=Hola!%20Estoy%20interesado%20en%20hacer%20un%20pedido%20de%20productos." target="_blank">📱 WhatsApp</a>
+
+  <script>
+    const sheetID = "1V3idgBFfpsIJdBs3Z6B8FmXOc9e6rGtF45Y_heR96B0";
+    const base = `https://docs.google.com/spreadsheets/d/${sheetID}/gviz/tq?`;
+    const query = encodeURIComponent('Select A,B,C,D');
+    const url = `${base}&tq=${query}`;
+
+    fetch(url)
+      .then(res => res.text())
+      .then(rep => {
+        const data = JSON.parse(rep.substr(47).slice(0, -2));
+        const productosDiv = document.getElementById("productos");
+
+        data.table.rows.forEach(row => {
+          const nombre = row.c[0]?.v || "";
+          const categoria = row.c[1]?.v || "";
+          const precio = row.c[2]?.v || "";
+          const imagen = row.c[3]?.v || "https://via.placeholder.com/200x150?text=Sin+Imagen";
+
+          const productoHTML = `
+            <div class="producto">
+              <img src="${imagen}" alt="${nombre}">
+              <h3>${nombre}</h3>
+              <p class="precio">$${precio}/kg</p>
+            </div>
+          `;
+          productosDiv.innerHTML += productoHTML;
+        });
+      })
+      .catch(err => {
+        console.error("Error cargando datos de Google Sheets", err);
+      });
+  </script>
+
+</body>
+</html>
