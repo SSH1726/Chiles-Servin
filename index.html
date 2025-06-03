@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Chiles y Cereales Servín - Productos</title>
+  <title>Chiles y Cereales Servín - Filtros</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -16,6 +16,21 @@
       color: white;
       padding: 1em;
       text-align: center;
+    }
+    .categorias {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      padding: 1em;
+    }
+    .categorias button {
+      background-color: #fff5e1;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 10px 15px;
+      cursor: pointer;
+      font-weight: bold;
     }
     .productos {
       display: flex;
@@ -68,6 +83,10 @@
     <h1>Chiles y Cereales Servín</h1>
   </header>
 
+  <div class="categorias" id="botones-categorias">
+    <button onclick="filtrar('todas')">Ver todos</button>
+  </div>
+
   <div class="productos" id="productos"></div>
 
   <a class="whatsapp" href="https://wa.me/5214421234567?text=Hola!%20Estoy%20interesado%20en%20hacer%20un%20pedido%20de%20productos." target="_blank">📱 WhatsApp</a>
@@ -78,26 +97,47 @@
     const query = encodeURIComponent('Select A,B,C,D');
     const url = `${base}&tq=${query}`;
 
+    function filtrar(categoria) {
+      document.querySelectorAll(".producto").forEach(div => {
+        if (categoria === 'todas' || div.dataset.cat === categoria) {
+          div.style.display = 'block';
+        } else {
+          div.style.display = 'none';
+        }
+      });
+    }
+
     fetch(url)
       .then(res => res.text())
       .then(rep => {
         const data = JSON.parse(rep.substr(47).slice(0, -2));
         const productosDiv = document.getElementById("productos");
+        const catDiv = document.getElementById("botones-categorias");
+        const categoriasSet = new Set();
 
         data.table.rows.forEach(row => {
           const nombre = row.c[0]?.v || "";
-          const categoria = row.c[1]?.v || "";
+          const categoria = (row.c[1]?.v || "").toLowerCase().replace(/ /g, "-");
           const precio = row.c[2]?.v || "";
           const imagen = row.c[3]?.v || "https://via.placeholder.com/200x150?text=Sin+Imagen";
 
+          categoriasSet.add(categoria);
+
           const productoHTML = `
-            <div class="producto">
+            <div class="producto" data-cat="${categoria}">
               <img src="${imagen}" alt="${nombre}">
               <h3>${nombre}</h3>
               <p class="precio">$${precio}/kg</p>
             </div>
           `;
           productosDiv.innerHTML += productoHTML;
+        });
+
+        categoriasSet.forEach(cat => {
+          const btn = document.createElement("button");
+          btn.textContent = cat.replace(/-/g, " ");
+          btn.onclick = () => filtrar(cat);
+          catDiv.appendChild(btn);
         });
       })
       .catch(err => {
