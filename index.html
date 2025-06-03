@@ -85,23 +85,23 @@
 
   <div class="categorias">
     <button onclick="filtrar('todas')">Ver todos</button>
-    <button onclick="filtrar('Alimento para mascotas')">Alimento para mascotas</button>
-    <button onclick="filtrar('Botana')">Botana</button>
-    <button onclick="filtrar('Camaron Seco')">Camaron Seco</button>
-    <button onclick="filtrar('Canela')">Canela</button>
-    <button onclick="filtrar('Cereales')">Cereales</button>
-    <button onclick="filtrar('Ciruelas y pasas')">Ciruelas y pasas</button>
-    <button onclick="filtrar('Condimentos y Especias')">Condimentos y Especias</button>
-    <button onclick="filtrar('Endulzantes')">Endulzantes</button>
-    <button onclick="filtrar('Frituras')">Frituras</button>
-    <button onclick="filtrar('Fruta Deshidratada')">Fruta Deshidratada</button>
-    <button onclick="filtrar('Gelatinas')">Gelatinas</button>
-    <button onclick="filtrar('Legumbres')">Legumbres</button>
-    <button onclick="filtrar('Maiz')">Maiz</button>
-    <button onclick="filtrar('Moles')">Moles</button>
-    <button onclick="filtrar('Nueces')">Nueces</button>
-    <button onclick="filtrar('Sales')">Sales</button>
-    <button onclick="filtrar('Semillas')">Semillas</button>
+    <button onclick="filtrar('alimento para mascotas')">Alimento para mascotas</button>
+    <button onclick="filtrar('botana')">Botana</button>
+    <button onclick="filtrar('camaron seco')">Camaron Seco</button>
+    <button onclick="filtrar('canela')">Canela</button>
+    <button onclick="filtrar('cereales')">Cereales</button>
+    <button onclick="filtrar('ciruelas y pasas')">Ciruelas y pasas</button>
+    <button onclick="filtrar('condimentos y especias')">Condimentos y Especias</button>
+    <button onclick="filtrar('endulzantes')">Endulzantes</button>
+    <button onclick="filtrar('frituras')">Frituras</button>
+    <button onclick="filtrar('fruta deshidratada')">Fruta Deshidratada</button>
+    <button onclick="filtrar('gelatinas')">Gelatinas</button>
+    <button onclick="filtrar('legumbres')">Legumbres</button>
+    <button onclick="filtrar('maiz')">Maiz</button>
+    <button onclick="filtrar('moles')">Moles</button>
+    <button onclick="filtrar('nueces')">Nueces</button>
+    <button onclick="filtrar('sales')">Sales</button>
+    <button onclick="filtrar('semillas')">Semillas</button>
   </div>
 
   <div class="productos" id="productos"></div>
@@ -109,20 +109,26 @@
   <a class="whatsapp" href="https://wa.me/5214421234567?text=Hola!%20Estoy%20interesado%20en%20hacer%20un%20pedido%20de%20productos." target="_blank">📱 WhatsApp</a>
 
   <script>
-    const sheetID = "1V3idgBFfpsIJdBs3Z6B8FmXOc9e6rGtF45Y_heR96B0";
-    const base = `https://docs.google.com/spreadsheets/d/${sheetID}/gviz/tq?`;
-    const query = encodeURIComponent("Select A,B,C,D");
-    const url = `${base}&tq=${query}`;
+    function normalizar(str) {
+      return str.toLowerCase().normalize("NFD").replace(/\s+/g, " ").trim().replace(/[\u0300-\u036f]/g, "");
+    }
 
     function filtrar(categoria) {
+      const catNormalizada = normalizar(categoria);
       document.querySelectorAll(".producto").forEach(div => {
-        if (categoria === "todas" || div.dataset.cat === categoria) {
+        const catProd = normalizar(div.dataset.cat || "");
+        if (catNormalizada === "todas" || catProd === catNormalizada) {
           div.style.display = "block";
         } else {
           div.style.display = "none";
         }
       });
     }
+
+    const sheetID = "1V3idgBFfpsIJdBs3Z6B8FmXOc9e6rGtF45Y_heR96B0";
+    const base = `https://docs.google.com/spreadsheets/d/${sheetID}/gviz/tq?`;
+    const query = encodeURIComponent("Select A,B,C,D");
+    const url = `${base}&tq=${query}`;
 
     fetch(url)
       .then(res => res.text())
