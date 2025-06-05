@@ -2,8 +2,8 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Chiles y Cereales Servín</title>
   <style>
     body {
@@ -17,6 +17,50 @@
       padding: 1em;
       text-align: center;
     }
+    /* Carrusel */
+    .carrusel-container {
+      position: relative;
+      margin: 1em;
+      overflow: hidden;
+    }
+    .carrusel {
+      display: flex;
+      transition: transform 0.3s ease-in-out;
+    }
+    .carrusel .item {
+      min-width: 300px;
+      margin-right: 1em;
+      background-color: white;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+      text-align: center;
+      padding: 0.5em;
+    }
+    .carrusel .item img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+    }
+    .carrusel-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background-color: rgba(0,0,0,0.5);
+      color: white;
+      border: none;
+      font-size: 1.5em;
+      padding: 0.2em 0.5em;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    .carrusel-btn.prev {
+      left: 10px;
+    }
+    .carrusel-btn.next {
+      right: 10px;
+    }
+    /* Categorías */
     .categorias {
       display: flex;
       flex-wrap: wrap;
@@ -32,6 +76,7 @@
       cursor: pointer;
       font-weight: bold;
     }
+    /* Galería de productos */
     .productos {
       display: flex;
       flex-wrap: wrap;
@@ -59,6 +104,7 @@
       font-weight: bold;
       margin-top: 0.5em;
     }
+    /* WhatsApp */
     .whatsapp {
       position: fixed;
       bottom: 20px;
@@ -71,6 +117,14 @@
       font-weight: bold;
       box-shadow: 0 2px 6px rgba(0,0,0,0.2);
     }
+    @media screen and (max-width: 600px) {
+      .producto, .carrusel .item {
+        width: 90%;
+      }
+      .carrusel-container {
+        margin: 0.5em;
+      }
+    }
   </style>
 </head>
 <body>
@@ -79,6 +133,14 @@
     <h1>Chiles y Cereales Servín</h1>
   </header>
 
+  <!-- Carrusel de productos destacados -->
+  <div class="carrusel-container">
+    <button class="carrusel-btn prev" onclick="moverCarrusel(-1)">&#10094;</button>
+    <div class="carrusel" id="carruselDestacados"></div>
+    <button class="carrusel-btn next" onclick="moverCarrusel(1)">&#10095;</button>
+  </div>
+
+  <!-- Botones de categoría -->
   <div class="categorias">
     <button onclick="filtrar('todas')">Ver todos</button>
     <button onclick="filtrar('alimento para mascotas')">Alimento para mascotas</button>
@@ -100,11 +162,24 @@
     <button onclick="filtrar('semillas')">Semillas</button>
   </div>
 
+  <!-- Galería de productos -->
   <div class="productos" id="productos"></div>
 
   <a class="whatsapp" href="https://wa.me/5214421234567?text=Hola!%20Estoy%20interesado%20en%20hacer%20un%20pedido%20de%20productos." target="_blank">📱 WhatsApp</a>
 
   <script>
+    let desplazamientoCarrusel = 0;
+    function moverCarrusel(direccion) {
+      const cont = document.getElementById('carruselDestacados');
+      const anchoItem = cont.querySelector('.item')?.offsetWidth || 300;
+      desplazamientoCarrusel += direccion * (anchoItem + 16);
+      if (desplazamientoCarrusel < 0) desplazamientoCarrusel = 0;
+      if (desplazamientoCarrusel > cont.scrollWidth - cont.offsetWidth) {
+        desplazamientoCarrusel = cont.scrollWidth - cont.offsetWidth;
+      }
+      cont.style.transform = 'translateX(' + -desplazamientoCarrusel + 'px)';
+    }
+
     function normalizar(str) {
       return (str || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
     }
@@ -123,13 +198,14 @@
 
     const sheetID = "1V3idgBFfpsIJdBs3Z6B8FmXOc9e6rGtF45Y_heR96B0";
     const base = `https://docs.google.com/spreadsheets/d/${sheetID}/gviz/tq?`;
-    const query = encodeURIComponent("Select A,B,C,D");
+    const query = encodeURIComponent("Select A,B,C,D,E,F");
     const url = `${base}&tq=${query}`;
 
     fetch(url)
       .then(res => res.text())
       .then(rep => {
         const data = JSON.parse(rep.substr(47).slice(0, -2));
+        const carruselDiv = document.getElementById("carruselDestacados");
         const productosDiv = document.getElementById("productos");
 
         data.table.rows.forEach(row => {
@@ -137,19 +213,33 @@
           const categoriaRaw = row.c[1]?.v || "";
           const categoria = normalizar(categoriaRaw);
           const precio = row.c[2]?.v || "";
-          const imagen = row.c[3]?.v || "https://via.placeholder.com/200x150?text=Producto";
+          const imagen = row.c[3]?.v || "";
+          const destacado = row.c[4]?.v || "";
+          const imagenGaleria = row.c[5]?.v || "";
 
+          // Tarjeta de galería
           const card = `
             <div class="producto" data-cat="${categoria}">
-              <img src="${imagen}" alt="${nombre}">
+              <img src="${imagen || 'https://via.placeholder.com/200x150?text=Producto'}" alt="${nombre}">
               <h3>${nombre}</h3>
               <p class="precio">$${precio}/kg</p>
             </div>
           `;
           productosDiv.innerHTML += card;
+
+          // Si está marcado como destacado, agregar al carrusel
+          if (destacado.toString().toLowerCase() === "✅" || destacado.toString() === "1" || destacado.toString().toLowerCase() === "true") {
+            const imgSrc = imagenGaleria || imagen || "https://via.placeholder.com/200x150?text=Destacado";
+            const item = `
+              <div class="item">
+                <img src="${imgSrc}" alt="${nombre}">
+                <h4>${nombre}</h4>
+              </div>
+            `;
+            carruselDiv.innerHTML += item;
+          }
         });
       });
   </script>
-
 </body>
 </html>
