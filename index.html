@@ -9,13 +9,15 @@
     body {
       font-family: Arial, sans-serif;
       margin: 0;
-      background-color: rgba(0, 0, 128, 0.05); /* Azul marino claro */
+      background-color: rgba(0, 0, 128, 0.05);
     }
     header {
-      background-color: #5c432c; /* Mantener color oscuro para header */
+      background-color: #5c432c;
       color: white;
-      position: relative;
+      display: flex;
+      align-items: center;
       padding: 10px 20px;
+      position: relative;
     }
     header img {
       position: absolute;
@@ -25,9 +27,8 @@
       max-height: 50px;
     }
     header h1 {
-      margin: 0;
+      margin: 0 auto;
       font-size: 1.5em;
-      text-align: center;
     }
     /* Buscador */
     .buscador-container {
@@ -62,6 +63,42 @@
     .categorias button.active {
       border-color: #5c432c;
       background-color: #e6d5c1;
+    }
+    /* Carrito */
+    .carrito-container {
+      background-color: white;
+      border-top: 1px solid #ddd;
+      border-bottom: 1px solid #ddd;
+      padding: 10px 20px;
+      display: none;
+      position: relative;
+    }
+    .carrito-container h2 {
+      margin: 0 0 10px 0;
+      font-size: 1.2em;
+    }
+    .carrito-items {
+      max-height: 200px;
+      overflow-y: auto;
+      margin-bottom: 10px;
+    }
+    .carrito-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 5px 0;
+      border-bottom: 1px solid #eee;
+    }
+    .carrito-item:last-child {
+      border-bottom: none;
+    }
+    .btn-carrito {
+      background-color: #FF9800;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 5px;
     }
     /* Galería de productos */
     .productos {
@@ -99,6 +136,16 @@
       width: 100%;
       padding: 5px;
       font-size: 1em;
+      margin-bottom: 5px;
+    }
+    .btn-agregar {
+      background-color: #5c432c;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 5px;
     }
     /* WhatsApp */
     .whatsapp {
@@ -132,6 +179,23 @@
     <input type="text" id="search" placeholder="Buscar producto..." oninput="applyFilters()">
   </div>
 
+  <!-- Botón Ver Carrito -->
+  <div style="text-align:center; padding-bottom:10px;">
+    <button class="btn-carrito" onclick="toggleCarrito()">Ver Carrito (<span id="countCarrito">0</span>)</button>
+  </div>
+
+  <!-- Carrito -->
+  <div class="carrito-container" id="carrito">
+    <h2>Tu Carrito</h2>
+    <div class="carrito-items" id="carritoItems"></div>
+    <div>
+      <strong>Total: $<span id="totalCarrito">0.00</span></strong>
+    </div>
+    <div style="padding-top:10px;">
+      <button class="btn-carrito" onclick="enviarPedido()">Enviar Pedido por WhatsApp</button>
+    </div>
+  </div>
+
   <!-- Botones de categoría -->
   <div class="categorias" id="botones-categorias">
     <button onclick="setCategory('todas', this)" class="active">Ver todos</button>
@@ -161,6 +225,7 @@
 
   <script>
     let currentCategory = 'todas';
+    let carrito = [];
 
     function normalizar(str) {
       return (str || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
@@ -203,6 +268,67 @@
       card.querySelector('.precio').textContent = '$' + precioFinal.toFixed(2);
     }
 
+    function agregarAlCarrito(btn) {
+      const card = btn.closest('.producto');
+      const nombre = card.querySelector('h3').innerText;
+      const selectElem = card.querySelector('select');
+      const valor = selectElem.value;
+      const precioKg = parseFloat(card.dataset.priceKg);
+      const precioCostal = parseFloat(card.dataset.priceCostal);
+      let cantidadTexto = "";
+      let precioFinal = 0;
+      if (valor === 'costal') {
+        cantidadTexto = "Costal entero (50 kg)";
+        precioFinal = precioCostal;
+      } else {
+        cantidadTexto = valor + " g";
+        precioFinal = precioKg * (parseFloat(valor)/1000);
+      }
+      carrito.push({ nombre, cantidad: cantidadTexto, precio: precioFinal });
+      actualizarVistaCarrito();
+    }
+
+    function actualizarVistaCarrito() {
+      const carritoItems = document.getElementById('carritoItems');
+      carritoItems.innerHTML = "";
+      let total = 0;
+      carrito.forEach((item, index) => {
+        const div = document.createElement('div');
+        div.className = 'carrito-item';
+        div.innerHTML = `
+          <span>${item.nombre} - ${item.precio.toFixed(2)} - ${item.cantidad}</span>
+          <button onclick="removerItem({index})">X</button>
+        `;
+        carritoItems.appendChild(div);
+        total += item.precio;
+      });
+      document.getElementById('countCarrito').innerText = carrito.length;
+      document.getElementById('totalCarrito').innerText = total.toFixed(2);
+    }
+
+    function removerItem(index) {
+      carrito.splice(index, 1);
+      actualizarVistaCarrito();
+    }
+
+    function toggleCarrito() {
+      const carritoDiv = document.getElementById('carrito');
+      carritoDiv.style.display = carritoDiv.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function enviarPedido() {
+      if (carrito.length === 0) {
+        alert("Tu carrito está vacío");
+        return;
+      }
+      let mensaje = "¡Hola! Quiero hacer un pedido:%0A";
+      carrito.forEach(item => {
+        mensaje += `- ${item.nombre}: ${item.precio.toFixed(2)} ({item.cantidad})%0A`;
+      });
+      mensaje += `%0ATotal: $${document.getElementById('totalCarrito').innerText}`;
+      window.open(`https://wa.me/5214421234567?text=${mensaje}`, '_blank');
+    }
+
     const sheetID = "1V3idgBFfpsIJdBs3Z6B8FmXOc9e6rGtF45Y_heR96B0";
     const base = `https://docs.google.com/spreadsheets/d/${sheetID}/gviz/tq?`;
     const query = encodeURIComponent("Select A,B,C,D,G");
@@ -237,6 +363,7 @@
                   <option value="costal">Costal entero (50 kg)</option>
                 </select>
               </div>
+              <button class="btn-agregar" onclick="agregarAlCarrito(this)">Agregar al carrito</button>
             </div>
           `;
           productosDiv.innerHTML += cardHtml;
