@@ -2,8 +2,8 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Chiles y Cereales Servín</title>
   <style>
     body {
@@ -20,17 +20,44 @@
       padding: 10px 20px;
       position: relative;
     }
-    header img {
+    .menu-toggle {
+      font-size: 24px;
+      background: none;
+      border: none;
+      color: white;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+    .menu {
+      display: none;
       position: absolute;
-      left: 20px;
-      top: 50%;
-      transform: translateY(-50%);
+      top: 100%;
+      left: 0;
+      background-color: white;
+      width: 200px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      z-index: 10;
+    }
+    .menu a {
+      display: block;
+      padding: 10px;
+      color: #5c432c;
+      text-decoration: none;
+      border-bottom: 1px solid #ddd;
+      font-weight: bold;
+    }
+    .menu a:hover {
+      background-color: #f0f0f0;
+    }
+    header img {
+      position: relative;
       max-height: 50px;
+      margin-left: 10px;
     }
     header h1 {
       margin: 0 auto;
       font-size: 1.5em;
-     }
+    }
     .btn-carrito-header {
       background-color: #FF9800;
       color: white;
@@ -40,17 +67,6 @@
       cursor: pointer;
       border-radius: 5px;
       z-index: 1;
-    }
-    /* Navegación */
-    .nav-sobre {
-      text-align: center;
-      background-color: #fff5e1;
-      padding: 8px;
-    }
-    .nav-sobre a {
-      font-weight: bold;
-      color: #5c432c;
-      text-decoration: none;
     }
     /* Buscador */
     .buscador-container {
@@ -188,15 +204,14 @@
 <body>
 
   <header>
-    <img src="{logo_url}" alt="Logo de Chiles y Cereales Servín">
+    <button class="menu-toggle" onclick="toggleMenu()">&#9776;</button>
+    <img src="https://a8df956abb.cbaul-cdnwnd.com/f87890b711a8506804ac4dab45807d6c/200000000-0f1d8101b8/700/servin%20logo.jpg?ph=a8df956abb" alt="Logo de Chiles y Cereales Servín">
     <h1>Chiles y Cereales Servín</h1>
     <button class="btn-carrito-header" onclick="toggleCarrito()">Carrito (<span id="countCarrito">0</span>)</button>
+    <div class="menu" id="menu">
+      <a href="about.html">Sobre Nosotros</a>
+    </div>
   </header>
-
-  <!-- Enlace a Sobre Nosotros -->
-  <div class="nav-sobre">
-    <a href="about.html">Sobre Nosotros</a>
-  </div>
 
   <!-- Buscador -->
   <div class="buscador-container">
@@ -217,17 +232,39 @@
 
   <!-- Botones de categoría -->
   <div class="categorias" id="botones-categorias">
-    <!-- Botones omitidos para brevedad -->
+    <button onclick="setCategory('todas', this)" class="active">Ver todos</button>
+    <button onclick="setCategory('alimento para mascotas', this)">Alimento para mascotas</button>
+    <button onclick="setCategory('botana', this)">Botana</button>
+    <button onclick="setCategory('camaron seco', this)">Camaron Seco</button>
+    <button onclick="setCategory('canela', this)">Canela</button>
+    <button onclick="setCategory('cereales', this)">Cereales</button>
+    <button onclick="setCategory('ciruelas y pasas', this)">Ciruelas y pasas</button>
+    <button onclick="setCategory('condimentos y especias', this)">Condimentos y Especias</button>
+    <button onclick="setCategory('endulzantes', this)">Endulzantes</button>
+    <button onclick="setCategory('frituras', this)">Frituras</button>
+    <button onclick="setCategory('fruta deshidratada', this)">Fruta Deshidratada</button>
+    <button onclick="setCategory('gelatinas', this)">Gelatinas</button>
+    <button onclick="setCategory('legumbres', this)">Legumbres</button>
+    <button onclick="setCategory('maiz', this)">Maiz</button>
+    <button onclick="setCategory('moles', this)">Moles</button>
+    <button onclick="setCategory('nueces', this)">Nueces</button>
+    <button onclick="setCategory('sales', this)">Sales</button>
+    <button onclick="setCategory('semillas', this)">Semillas</button>
   </div>
 
   <!-- Galería de productos -->
   <div class="productos" id="productos"></div>
 
-  <a class="whatsapp" href="https://wa.me/{whatsapp_number}?text=Hola!%20Estoy%20interesado%20en%20hacer%20un%20pedido%20de%20productos." target="_blank">📱 WhatsApp</a>
+  <a class="whatsapp" href="https://wa.me/524611267217?text=Hola!%20Estoy%20interesado%20en%20hacer%20un%20pedido%20de%20productos." target="_blank">📱 WhatsApp</a>
 
   <script>
     let currentCategory = 'todas';
     let carrito = [];
+
+    function toggleMenu() {
+      const menu = document.getElementById("menu");
+      menu.style.display = menu.style.display === "block" ? "none" : "block";
+    }
 
     function normalizar(str) {
       return (str || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
@@ -247,11 +284,7 @@
         const nameProd = div.dataset.name;
         const matchesCategory = (currentCategory === 'todas' || catProd === currentCategory);
         const matchesSearch = (searchTerm === "" || nameProd.includes(searchTerm));
-        if (matchesCategory && matchesSearch) {
-          div.style.display = 'block';
-        } else {
-          div.style.display = 'none';
-        }
+        div.style.display = (matchesCategory && matchesSearch) ? 'block' : 'none';
       });
     }
 
@@ -298,7 +331,7 @@
         const divItem = document.createElement('div');
         divItem.className = 'carrito-item';
         const spanText = document.createElement('span');
-        spanText.textContent = `${item.nombre} - $${item.precio.toFixed(2)} - ${item.cantidad}`;
+        spanText.textContent = `${item.nombre} - ${item.precio.toFixed(2)} - ${item.cantidad}`;
         const btnRemove = document.createElement('button');
         btnRemove.textContent = 'X';
         btnRemove.onclick = function() { removerItem(index); };
@@ -328,13 +361,13 @@
       }
       let mensaje = "¡Hola! Quiero hacer un pedido:%0A";
       carrito.forEach(item => {
-        mensaje += `- ${item.nombre}: $${item.precio.toFixed(2)} (${item.cantidad})%0A`;
+        mensaje += `- ${item.nombre}: ${item.precio.toFixed(2)} ({item.cantidad})%0A`;
       });
       mensaje += `%0ATotal: $${document.getElementById('totalCarrito').innerText}`;
-      window.open(`https://wa.me/{whatsapp_number}?text=${mensaje}`, '_blank');
+      window.open(`https://wa.me/524611267217?text=${mensaje}`, '_blank');
     }
 
-    const sheetID = "{sheet_id}";
+    const sheetID = "1V3idgBFfpsIJdBs3Z6B8FmXOc9e6rGtF45Y_heR96B0";
     const base = `https://docs.google.com/spreadsheets/d/${sheetID}/gviz/tq?`;
     const query = encodeURIComponent("Select A,B,C,D,G");
     const url = `${base}&tq=${query}`;
@@ -372,8 +405,7 @@
             </div>
           `;
           productosDiv.innerHTML += cardHtml;
-        });
-        applyFilters();
+        });        applyFilters();
       });
   </script>
 
