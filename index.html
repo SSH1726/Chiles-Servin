@@ -14,8 +14,17 @@
     header {
       background-color: #5c432c;
       color: white;
-      padding: 1em;
-      text-align: center;
+      display: flex;
+      align-items: center;
+      padding: 10px 20px;
+    }
+    header img {
+      max-height: 50px;
+      margin-right: 15px;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 1.5em;
     }
     /* Buscador */
     .buscador-container {
@@ -73,11 +82,15 @@
       max-width: 100%;
       height: auto;
       border-radius: 8px;
+      margin-bottom: 10px;
     }
     .precio {
       color: green;
       font-weight: bold;
-      margin-top: 0.5em;
+      margin: 0.5em 0;
+    }
+    .selector-cantidad {
+      margin: 0.5em 0;
     }
     /* WhatsApp */
     .whatsapp {
@@ -102,6 +115,7 @@
 <body>
 
   <header>
+    <img src="https://a8df956abb.cbaul-cdnwnd.com/f87890b711a8506804ac4dab45807d6c/200000000-0f1d8101b8/700/servin%20logo.jpg?ph=a8df956abb" alt="Logo de Chiles y Cereales Servín">
     <h1>Chiles y Cereales Servín</h1>
   </header>
 
@@ -154,8 +168,8 @@
     function applyFilters() {
       const searchTerm = normalizar(document.getElementById('search').value);
       document.querySelectorAll('.producto').forEach(div => {
-        const catProd = div.dataset.cat || "";
-        const nameProd = div.dataset.name || "";
+        const catProd = div.dataset.cat;
+        const nameProd = div.dataset.name;
         const matchesCategory = (currentCategory === 'todas' || catProd === currentCategory);
         const matchesSearch = (searchTerm === "" || nameProd.includes(searchTerm));
         if (matchesCategory && matchesSearch) {
@@ -166,9 +180,24 @@
       });
     }
 
+    function actualizarPrecio(selectElem) {
+      const card = selectElem.closest('.producto');
+      const precioKg = parseFloat(card.dataset.priceKg);
+      const precioCostal = parseFloat(card.dataset.priceCostal);
+      const valor = selectElem.value;
+      let precioFinal = 0;
+      if (valor === 'costal') {
+        precioFinal = precioCostal;
+      } else {
+        const gramos = parseFloat(valor);
+        precioFinal = (precioKg * gramos/1000);
+      }
+      card.querySelector('.precio').textContent = '$' + precioFinal.toFixed(2);
+    }
+
     const sheetID = "1V3idgBFfpsIJdBs3Z6B8FmXOc9e6rGtF45Y_heR96B0";
     const base = `https://docs.google.com/spreadsheets/d/${sheetID}/gviz/tq?`;
-    const query = encodeURIComponent("Select A,B,C,D,E,F");
+    const query = encodeURIComponent("Select A,B,C,D,G");
     const url = `${base}&tq=${query}`;
 
     fetch(url)
@@ -181,21 +210,29 @@
           const nombre = row.c[0]?.v || "";
           const categoriaRaw = row.c[1]?.v || "";
           const categoria = normalizar(categoriaRaw);
-          const precio = row.c[2]?.v || "";
+          const precioKg = parseFloat(row.c[2]?.v || 0);
           const imagen = row.c[3]?.v || "https://via.placeholder.com/200x150?text=Producto";
-
+          const precioCostal = parseFloat(row.c[4]?.v || 0);
           const nombreNorm = normalizar(nombre);
 
-          const card = `
-            <div class="producto" data-cat="${categoria}" data-name="${nombreNorm}">
+          const cardHtml = `
+            <div class="producto" data-cat="${categoria}" data-name="${nombreNorm}" data-price-kg="${precioKg}" data-price-costal="${precioCostal}">
               <img src="${imagen}" alt="${nombre}">
               <h3>${nombre}</h3>
-              <p class="precio">$${precio}/kg</p>
+              <p class="precio">$${precioKg.toFixed(2)}/kg</p>
+              <div class="selector-cantidad">
+                <select onchange="actualizarPrecio(this)">
+                  <option value="1000">1 kg</option>
+                  <option value="750">750 g</option>
+                  <option value="500">500 g</option>
+                  <option value="250">250 g</option>
+                  <option value="costal">Costal entero</option>
+                </select>
+              </div>
             </div>
           `;
-          productosDiv.innerHTML += card;
+          productosDiv.innerHTML += cardHtml;
         });
-
         applyFilters();
       });
   </script>
