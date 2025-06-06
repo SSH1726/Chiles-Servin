@@ -16,6 +16,7 @@
       color: white;
       display: flex;
       align-items: center;
+      justify-content: space-between;
       padding: 10px 20px;
       position: relative;
     }
@@ -29,6 +30,16 @@
     header h1 {
       margin: 0 auto;
       font-size: 1.5em;
+    }
+    .btn-carrito-header {
+      background-color: #FF9800;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 5px;
+      z-index: 1;
     }
     /* Buscador */
     .buscador-container {
@@ -85,20 +96,16 @@
     .carrito-item {
       display: flex;
       justify-content: space-between;
+      align-items: center;
       padding: 5px 0;
       border-bottom: 1px solid #eee;
     }
-    .carrito-item:last-child {
-      border-bottom: none;
-    }
-    .btn-carrito {
-      background-color: #FF9800;
-      color: white;
+    .carrito-item button {
+      background: none;
       border: none;
-      padding: 8px 12px;
-      font-weight: bold;
+      color: red;
+      font-size: 1em;
       cursor: pointer;
-      border-radius: 5px;
     }
     /* Galería de productos */
     .productos {
@@ -172,16 +179,12 @@
   <header>
     <img src="https://a8df956abb.cbaul-cdnwnd.com/f87890b711a8506804ac4dab45807d6c/200000000-0f1d8101b8/700/servin%20logo.jpg?ph=a8df956abb" alt="Logo de Chiles y Cereales Servín">
     <h1>Chiles y Cereales Servín</h1>
+    <button class="btn-carrito-header" onclick="toggleCarrito()">Carrito (<span id="countCarrito">0</span>)</button>
   </header>
 
   <!-- Buscador -->
   <div class="buscador-container">
     <input type="text" id="search" placeholder="Buscar producto..." oninput="applyFilters()">
-  </div>
-
-  <!-- Botón Ver Carrito -->
-  <div style="text-align:center; padding-bottom:10px;">
-    <button class="btn-carrito" onclick="toggleCarrito()">Ver Carrito (<span id="countCarrito">0</span>)</button>
   </div>
 
   <!-- Carrito -->
@@ -221,7 +224,7 @@
   <!-- Galería de productos -->
   <div class="productos" id="productos"></div>
 
-  <a class="whatsapp" href="https://wa.me/5214421234567?text=Hola!%20Estoy%20interesado%20en%20hacer%20un%20pedido%20de%20productos." target="_blank">📱 WhatsApp</a>
+  <a class="whatsapp" href="https://wa.me/524611267217?text=Hola!%20Estoy%20interesado%20en%20hacer%20un%20pedido%20de%20productos." target="_blank">📱 WhatsApp</a>
 
   <script>
     let currentCategory = 'todas';
@@ -284,7 +287,7 @@
         cantidadTexto = valor + " g";
         precioFinal = precioKg * (parseFloat(valor)/1000);
       }
-      carrito.push({ nombre, cantidad: cantidadTexto, precio: precioFinal });
+      carrito.push({ nombre: nombre, cantidad: cantidadTexto, precio: precioFinal });
       actualizarVistaCarrito();
     }
 
@@ -293,13 +296,16 @@
       carritoItems.innerHTML = "";
       let total = 0;
       carrito.forEach((item, index) => {
-        const div = document.createElement('div');
-        div.className = 'carrito-item';
-        div.innerHTML = `
-          <span>${item.nombre} - ${item.precio.toFixed(2)} - ${item.cantidad}</span>
-          <button onclick="removerItem({index})">X</button>
-        `;
-        carritoItems.appendChild(div);
+        const divItem = document.createElement('div');
+        divItem.className = 'carrito-item';
+        const spanText = document.createElement('span');
+        spanText.textContent = `${item.nombre} - ${item.precio.toFixed(2)} - ${item.cantidad}`;
+        const btnRemove = document.createElement('button');
+        btnRemove.textContent = 'X';
+        btnRemove.onclick = function() { removerItem(index); };
+        divItem.appendChild(spanText);
+        divItem.appendChild(btnRemove);
+        carritoItems.appendChild(divItem);
         total += item.precio;
       });
       document.getElementById('countCarrito').innerText = carrito.length;
@@ -326,7 +332,7 @@
         mensaje += `- ${item.nombre}: ${item.precio.toFixed(2)} ({item.cantidad})%0A`;
       });
       mensaje += `%0ATotal: $${document.getElementById('totalCarrito').innerText}`;
-      window.open(`https://wa.me/5214421234567?text=${mensaje}`, '_blank');
+      window.open(`https://wa.me/524611267217?text=${mensaje}`, '_blank');
     }
 
     const sheetID = "1V3idgBFfpsIJdBs3Z6B8FmXOc9e6rGtF45Y_heR96B0";
