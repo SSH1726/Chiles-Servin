@@ -1,262 +1,221 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Chiles y Cereales Servín</title>
-
-  <!-- Favicon para evitar el 404 de favicon.ico -->
-  <link rel="icon" href="https://a8df956abb.cbaul-cdnwnd.com/f87890b711a8506804ac4dab45807d6c/200000000-0f1d8101b8/700/servin%20logo.jpg?ph=a8df956abb" />
-
+  <link rel="icon" href="https://a8df956abb.cbaul-cdnwnd.com/f87890b711a8506804ac4dab45807d6c/200000000-0f1d8101b8/700/servin%20logo.jpg?ph=a8df956abb">
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      background-color: rgba(0, 0, 128, 0.05);
-    }
+    body { font-family:Arial,sans-serif; margin:0; background:#f5f5fc; }
     header {
-      background-color: #5c432c;
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 10px 20px;
-      position: fixed;
-      top: 0;
-      width: 100%;
-      box-sizing: border-box;
-      z-index: 1000;
+      background:#5c432c; color:white; display:flex;
+      align-items:center; justify-content:space-between;
+      padding:10px 20px; position:fixed; top:0; width:100%;
+      box-sizing:border-box; z-index:1000;
     }
-    header img {
-      max-height: 50px;
-    }
-    header h1 {
-      margin: 0 auto;
-      font-size: 1.5em;
-    }
+    header img { max-height:50px; }
+    header h1 { margin:0 auto; font-size:1.5em; }
     .btn-carrito-header {
-      background-color: #FF9800;
-      color: white;
-      border: none;
-      padding: 8px 12px;
-      font-weight: bold;
-      cursor: pointer;
-      border-radius: 5px;
+      background:#FF9800; color:white; border:none;
+      padding:8px 12px; font-weight:bold; cursor:pointer;
+      border-radius:5px;
     }
     .buscador-container {
-      display: flex;
-      justify-content: center;
-      padding: 80px 1em 1em;
+      display:flex; justify-content:center;
+      padding:80px 1em 1em;
     }
     #search {
-      width: 80%;
-      max-width: 400px;
-      padding: 10px;
-      font-size: 1em;
-      border: 1px solid #ccc;
-      border-radius: 5px;
+      width:80%; max-width:400px; padding:10px;
+      font-size:1em; border:1px solid #ccc; border-radius:5px;
     }
     .categorias {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 10px;
-      padding: 0 1em 1em;
+      display:flex; flex-wrap:wrap; justify-content:center;
+      gap:10px; padding:0 1em 1em;
     }
     .categorias button {
-      background-color: #fff5e1;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      padding: 10px 15px;
-      cursor: pointer;
-      font-weight: bold;
+      background:#fff5e1; border:1px solid #ccc;
+      border-radius:8px; padding:10px 15px;
+      cursor:pointer; font-weight:bold;
     }
     .categorias button.active {
-      border-color: #5c432c;
-      background-color: #e6d5c1;
+      border-color:#5c432c; background:#e6d5c1;
     }
     .productos {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 20px;
-      padding: 1em;
+      display:flex; flex-wrap:wrap; justify-content:center;
+      gap:20px; padding:1em;
     }
     .producto {
-      background-color: white;
-      border: 1px solid #ddd;
-      border-radius: 10px;
-      width: 220px;
-      padding: 1em;
-      box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
-      text-align: center;
-      font-size: 0.9em;
+      background:white; border:1px solid #ddd;
+      border-radius:10px; width:220px; padding:1em;
+      box-shadow:2px 2px 5px rgba(0,0,0,0.1);
+      text-align:center; font-size:0.9em;
     }
     .producto img {
-      max-width: 100%;
-      height: auto;
-      border-radius: 8px;
-      margin-bottom: 10px;
+      max-width:100%; height:auto; border-radius:8px;
+      margin-bottom:10px;
     }
     .precio {
-      color: green;
-      font-weight: bold;
-      margin: 0.5em 0;
+      color:green; font-weight:bold; margin:0.5em 0;
     }
-    .selector-cantidad {
-      margin: 0.5em 0;
-    }
+    .selector-cantidad { margin:0.5em 0; }
     .selector-cantidad select {
-      width: 100%;
-      padding: 5px;
-      font-size: 1em;
-      margin-bottom: 5px;
+      width:100%; padding:5px; font-size:1em;
+      margin-bottom:5px;
     }
     .btn-agregar {
-      background-color: #5c432c;
-      color: white;
-      border: none;
-      padding: 8px 12px;
-      font-weight: bold;
-      cursor: pointer;
-      border-radius: 5px;
+      background:#5c432c; color:white; border:none;
+      padding:8px 12px; font-weight:bold; cursor:pointer;
+      border-radius:5px;
     }
     .whatsapp {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background-color: #25d366;
-      color: white;
-      padding: 12px 18px;
-      border-radius: 50px;
-      text-decoration: none;
-      font-weight: bold;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      position:fixed; bottom:20px; right:20px;
+      background:#25d366; color:white; padding:12px 18px;
+      border-radius:50px; text-decoration:none;
+      font-weight:bold; box-shadow:0 2px 6px rgba(0,0,0,0.2);
     }
-    @media screen and (max-width: 600px) {
-      .producto {
-        width: 90%;
-      }
+    @media(max-width:600px){
+      .producto { width:90%; }
     }
   </style>
 </head>
 <body>
 
 <header>
-  <img src="https://a8df956abb.cbaul-cdnwnd.com/f87890b711a8506804ac4dab45807d6c/200000000-0f1d8101b8/700/servin%20logo.jpg?ph=a8df956abb" alt="Logo Servín">
+  <img src="https://a8df956abb.cbaul-cdnwnd.com/f87890b711a8506804ac4dab45807d6c/200000000-0f1d8101b8/700/servin%20logo.jpg?ph=a8df956abb" alt="Logo">
   <h1>Chiles y Cereales Servín</h1>
-  <button class="btn-carrito-header" onclick="toggleCarrito()">Carrito (<span id="countCarrito">0</span>)</button>
+  <button class="btn-carrito-header" onclick="toggleCarrito()">
+    Carrito (<span id="countCarrito">0</span>)
+  </button>
 </header>
 
 <div class="buscador-container">
-  <input type="text" id="search" placeholder="Buscar producto..." oninput="applyFilters()">
+  <input id="search" type="text" placeholder="Buscar producto..." oninput="applyFilters()">
 </div>
 
 <div class="categorias" id="botones-categorias">
-  <button onclick="setCategory('todas', this)" class="active">Ver todos</button>
-  <!-- ... tus otros botones de categoría ... -->
+  <button onclick="setCategory('todas',this)" class="active">Ver todos</button>
+  <button onclick="setCategory('alimento para mascotas',this)">Alimento para mascotas</button>
+  <button onclick="setCategory('botana',this)">Botana</button>
+  <button onclick="setCategory('camaron seco',this)">Camaron Seco</button>
+  <button onclick="setCategory('canela',this)">Canela</button>
+  <button onclick="setCategory('cereales',this)">Cereales</button>
+  <button onclick="setCategory('ciruelas y pasas',this)">Ciruelas y pasas</button>
+  <button onclick="setCategory('condimentos y especias',this)">Condimentos</button>
+  <button onclick="setCategory('endulzantes',this)">Endulzantes</button>
+  <button onclick="setCategory('frituras',this)">Frituras</button>
+  <button onclick="setCategory('fruta deshidratada',this)">Fruta Deshidratada</button>
+  <button onclick="setCategory('gelatinas',this)">Gelatinas</button>
+  <button onclick="setCategory('legumbres',this)">Legumbres</button>
+  <button onclick="setCategory('maiz',this)">Maiz</button>
+  <button onclick="setCategory('moles',this)">Moles</button>
+  <button onclick="setCategory('nueces',this)">Nueces</button>
+  <button onclick="setCategory('sales',this)">Sales</button>
+  <button onclick="setCategory('semillas',this)">Semillas</button>
 </div>
 
 <div class="productos" id="productos"></div>
 
-<a class="whatsapp" href="https://wa.me/524611267217?text=Hola!%20Estoy%20interesado%20en%20hacer%20un%20pedido." target="_blank">📱 WhatsApp</a>
+<a class="whatsapp" href="https://wa.me/524611267217?text=Hola!%20Estoy%20interesado%20en%20hacer%20un%20pedido."
+   target="_blank">📱 WhatsApp</a>
 
 <script>
-  let currentCategory = 'todas', carrito = [];
-  function normalizar(s){return(s||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").trim();}
+  let currentCategory='todas', carrito=[];
+
+  function normalizar(s){
+    return(s||'').toLowerCase().normalize('NFD')
+      .replace(/[\u0300-\u036f]/g,'').trim();
+  }
   function setCategory(cat,btn){
     currentCategory=cat;
-    document.querySelectorAll('.categorias button').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.categorias button')
+      .forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');
     applyFilters();
   }
   function applyFilters(){
-    const term = normalizar(document.getElementById('search').value);
-    document.querySelectorAll('.producto').forEach(d=>{
-      const cat = d.dataset.cat, name = d.dataset.name;
-      d.style.display = ((currentCategory==='todas'||cat===currentCategory) && (term===""||name.includes(term)))?'block':'none';
+    const term=normalizar(search.value);
+    document.querySelectorAll('.producto').forEach(div=>{
+      const cat=div.dataset.cat, nm=div.dataset.name;
+      div.style.display=((currentCategory==='todas'||cat===currentCategory)
+        &&(term===''||nm.includes(term)))?'block':'none';
     });
   }
   function actualizarPrecio(sel){
-    const card = sel.closest('.producto'),
-          pk = parseFloat(card.dataset.priceKg),
-          pc = parseFloat(card.dataset.priceCostal),
-          val = sel.value,
-          precio = val==='costal' ? pc : pk*(parseFloat(val)/1000);
-    card.querySelector('.precio').textContent = '$' + precio.toFixed(2);
+    const card=sel.closest('.producto'),
+          pk=parseFloat(card.dataset.priceKg),
+          pc=parseFloat(card.dataset.priceCostal),
+          val=sel.value,
+          pr= val==='costal'?pc:pk*(val/1000);
+    card.querySelector('.precio').textContent='$'+pr.toFixed(2);
   }
   function agregarAlCarrito(btn){
-    const card = btn.closest('.producto'),
-          nombre = card.querySelector('h3').innerText,
-          val = card.querySelector('select').value,
-          pk = parseFloat(card.dataset.priceKg),
-          pc = parseFloat(card.dataset.priceCostal),
-          textoCant = val==='costal'?'Costal (50 kg)':val+' g',
-          precio = val==='costal'?pc:pk*(parseFloat(val)/1000);
-    carrito.push({nombre,textoCant,precio});
+    const card=btn.closest('.producto'),
+          nm=card.querySelector('h3').innerText,
+          val=card.querySelector('select').value,
+          pk=parseFloat(card.dataset.priceKg),
+          pc=parseFloat(card.dataset.priceCostal),
+          ct=val==='costal'?'Costal (50kg)':val+'g',
+          pr=val==='costal'?pc:pk*(val/1000);
+    carrito.push({nombre:nm,cantidad:ct,precio:pr});
     actualizarVistaCarrito();
   }
   function actualizarVistaCarrito(){
     let total=0;
-    const cont = document.getElementById('carritoItems')||createCarritoContainer();
-    cont.innerHTML = '';
-    carrito.forEach((item,i)=>{
-      const div = document.createElement('div'); div.className='carrito-item';
-      const span = document.createElement('span');
-      span.textContent = `${item.nombre} - $${item.precio.toFixed(2)} (${item.textoCant})`;
-      const btn = document.createElement('button'); btn.textContent='X';
-      btn.onclick = ()=>{ carrito.splice(i,1); actualizarVistaCarrito(); };
-      div.append(span,btn); cont.append(div);
-      total += item.precio;
+    let cont=document.getElementById('carritoItems');
+    if(!cont){
+      const ctn=document.createElement('div');
+      ctn.id='carrito'; ctn.className='carrito-container';
+      ctn.innerHTML=`<h2>Tu Carrito</h2>
+        <div id="carritoItems" class="carrito-items"></div>
+        <div><strong>Total: $<span id="totalCarrito">0.00</span></strong></div>
+        <button onclick="enviarPedido()">Enviar Pedido por WhatsApp</button>`;
+      document.body.insertBefore(ctn, document.querySelector('.buscador-container'));
+      cont=document.getElementById('carritoItems');
+    }
+    cont.innerHTML='';
+    carrito.forEach((it,i)=>{
+      const div=document.createElement('div');
+      div.className='carrito-item';
+      div.innerHTML=`<span>${it.nombre} - $${it.precio.toFixed(2)} (${it.cantidad})</span>
+                     <button onclick="carrito.splice(${i},1);actualizarVistaCarrito()">X</button>`;
+      cont.appendChild(div);
+      total += it.precio;
     });
-    document.getElementById('countCarrito').innerText = carrito.length;
-    document.getElementById('totalCarrito')?.innerText = total.toFixed(2);
-  }
-  function createCarritoContainer(){
-    const c = document.createElement('div'); c.id='carrito'; c.className='carrito-container';
-    c.innerHTML=`
-      <h2>Tu Carrito</h2>
-      <div id="carritoItems" class="carrito-items"></div>
-      <div><strong>Total: $<span id="totalCarrito">0.00</span></strong></div>
-      <div style="padding-top:10px;">
-        <button class="btn-carrito" onclick="enviarPedido()">Enviar Pedido por WhatsApp</button>
-      </div>`;
-    document.body.insertBefore(c, document.querySelector('.buscador-container'));
-    return c;
+    document.getElementById('countCarrito').innerText=carrito.length;
+    if(document.getElementById('totalCarrito'))
+      document.getElementById('totalCarrito').innerText=total.toFixed(2);
   }
   function toggleCarrito(){
-    const c = document.getElementById('carrito') || createCarritoContainer();
-    c.style.display = c.style.display==='block'?'none':'block';
+    const ctn=document.getElementById('carrito');
+    if(ctn) ctn.style.display = ctn.style.display==='block'?'none':'block';
+    else actualizarVistaCarrito();
   }
   function enviarPedido(){
-    if(carrito.length===0){ alert('Tu carrito está vacío'); return; }
-    let msg = '¡Hola! Quiero hacer un pedido:%0A';
-    carrito.forEach(i=> msg += `- ${i.nombre}: $${i.precio.toFixed(2)} (${i.textoCant})%0A`);
-    msg += `%0ATotal: $${document.getElementById('totalCarrito').innerText}`;
+    if(!carrito.length){alert('Carrito vacío');return;}
+    let msg='¡Hola! Quiero un pedido:%0A';
+    carrito.forEach(it=>msg+=`- ${it.nombre}: $${it.precio.toFixed(2)} (${it.cantidad})%0A`);
+    msg+=`%0ATotal: $${document.getElementById('totalCarrito').innerText}`;
     window.open(`https://wa.me/524611267217?text=${msg}`,'_blank');
   }
 
-  // --- Carga datos desde Google Sheets ---
-  const SHEET_ID = '1V3idgBFfpsIJdBs3Z6B8FmXOc9e6rGtF45Y_heR96B0';
-  const QUERY = encodeURIComponent('Select A,B,C,D,G');
-  const URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tq=${QUERY}`;
-
-  fetch(URL)
-    .then(res=>res.text())
-    .then(txt => {
-      const json = JSON.parse(txt.substr(47).slice(0,-2));
-      json.table.rows.forEach(rw => {
-        const nm = rw.c[0]?.v || '',
-              cat = normalizar(rw.c[1]?.v || ''),
-              pk = parseFloat(rw.c[2]?.v || 0),
-              img = rw.c[3]?.v || 'https://via.placeholder.com/200x150?text=Producto',
-              pc = parseFloat(rw.c[4]?.v || 0),
-              nml = normalizar(nm);
-        document.getElementById('productos').innerHTML += `
-          <div class="producto" data-cat="${cat}" data-name="${nml}"
+  // Carga desde Google Sheets
+  const SHEET_ID='1V3idgBFfpsIJdBs3Z6B8FmXOc9e6rGtF45Y_heR96B0';
+  fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tq=${encodeURIComponent('Select A,B,C,D,G')}`)
+    .then(r=>r.text())
+    .then(t=>{
+      const js=JSON.parse(t.substr(47).slice(0,-2));
+      js.table.rows.forEach(rw=>{
+        const nombre=rw.c[0]?.v||'',
+              cat=normalizar(rw.c[1]?.v||''),
+              pk=parseFloat(rw.c[2]?.v||0),
+              img=rw.c[3]?.v||'https://via.placeholder.com/200x150?text=Sin+imagen',
+              pc=parseFloat(rw.c[4]?.v||0),
+              nmL=normalizar(nombre);
+        document.getElementById('productos').innerHTML+=`
+          <div class="producto" data-cat="${cat}" data-name="${nmL}"
                data-price-kg="${pk}" data-price-costal="${pc}">
-            <img src="${img}" alt="${nm}">
-            <h3>${nm}</h3>
+            <img src="${img}" alt="${nombre}">
+            <h3>${nombre}</h3>
             <p class="precio">$${pk.toFixed(2)}/kg</p>
             <div class="selector-cantidad">
               <select onchange="actualizarPrecio(this)">
@@ -272,7 +231,7 @@
       });
       applyFilters();
     })
-    .catch(e => console.error('Error cargando datos:', e));
+    .catch(e=>console.error('Error carga datos:',e));
 </script>
 
 </body>
