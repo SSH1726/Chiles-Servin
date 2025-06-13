@@ -114,17 +114,27 @@ function render(rows){
     div.dataset.cat=norm(cat);div.dataset.name=norm(n);
     div.dataset.pk=p;div.dataset.pc=pc;div.dataset.peso=peso;
     div.dataset.pp=pz;div.dataset.pcj=cajaP;div.dataset.pcb=cubP;
+
+    /* ----- construir selector dinámico de unidades ----- */
+    let opts='<select onchange="calcPrecio(this)">',tieneAlgo=false;
+    if(kgTf==='TRUE'){opts+=`
+      <option value="250">250 g</option>
+      <option value="500">500 g</option>
+      <option value="750">750 g</option>
+      <option value="1000" selected>1 kg</option>`;tieneAlgo=true;}
+    if(costTf==='TRUE'){opts+=`<option value="costal">Costal (${peso} kg)</option>`;tieneAlgo=true;}
+    if(cantPz==='TRUE'){opts+='<option value="pieza">Pieza</option>';tieneAlgo=true;}
+    if(cajaTf==='TRUE'){opts+='<option value="caja">Caja</option>';tieneAlgo=true;}
+    if(cubTf==='TRUE'){opts+='<option value="cubeta">Cubeta</option>';tieneAlgo=true;}
+    if(!tieneAlgo){opts+='<option value="unica" selected>Unidad única</option>';}
+    opts+='</select>';
+    /* ---------------------------------------------------- */
+
     div.innerHTML=`
       <img src="${img||'https://via.placeholder.com/200x150?text=Sin+imagen'}" alt="${n}">
       <h3>${n}</h3>
       <p class="precio">$${(+p).toFixed(2)}/kg</p>
-      <select onchange="calcPrecio(this)">
-        ${kgTf==='TRUE'?`<option value="1000">1 kg</option><option value="750">750 g</option><option value="500">500 g</option><option value="250">250 g</option>`:''}
-        ${costTf==='TRUE'?`<option value="costal">Costal (${peso} kg)</option>`:''}
-        ${cantPz==='TRUE'?`<option value="pieza">Pieza</option>`:''}
-        ${cajaTf==='TRUE'?`<option value="caja">Caja</option>`:''}
-        ${cubTf==='TRUE'?`<option value="cubeta">Cubeta</option>`:''}
-      </select>
+      ${opts}
       <button class="btn-agregar" onclick="addToCart(this)">Agregar</button>`;
     cont.appendChild(div);
   });
@@ -142,12 +152,12 @@ function filter(){
 function calcPrecio(sel){
   const p=sel.closest('.producto');
   const v=sel.value,pk=+p.dataset.pk,pc=+p.dataset.pc,pp=+p.dataset.pp,pcj=+p.dataset.pcj,pcb=+p.dataset.pcb;
-  let precio=pk;           // kg
+  let precio=pk; // por defecto 1 kg
   if(v==='750'||v==='500'||v==='250') precio=pk*(+v/1000);
-  else if(v==='costal')    precio=pc;
-  else if(v==='pieza')     precio=pp;
-  else if(v==='caja')      precio=pcj;
-  else if(v==='cubeta')    precio=pcb;
+  else if(v==='costal') precio=pc;
+  else if(v==='pieza') precio=pp;
+  else if(v==='caja')  precio=pcj;
+  else if(v==='cubeta')precio=pcb;
   p.querySelector('.precio').textContent='$'+precio.toFixed(2);
 }
 function addToCart(btn){
@@ -155,7 +165,7 @@ function addToCart(btn){
   const precio=+p.querySelector('.precio').textContent.replace(/[^0-9.]/g,'');
   const nombre=p.querySelector('h3').textContent;
   const ct = sel==='costal'?`Costal (${p.dataset.peso} kg)`:
-             sel==='pieza'?'Pieza':sel==='caja'?'Caja':sel==='cubeta'?'Cubeta':sel+' g';
+             sel==='pieza'?'Pieza':sel==='caja'?'Caja':sel==='cubeta'?'Cubeta':sel==='unica'?'Unidad':' '+sel+' g';
   const c=cart();c.push({nombre,ct,precio});save(c);updateBadge();alert('Agregado al carrito');}
 function toggleCart(){const c=$('#carrito');c.style.display=c.style.display==='block'?'none':'block';renderCart();}
 function renderCart(){
