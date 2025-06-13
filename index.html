@@ -116,19 +116,28 @@ function render(rows){
     div.dataset.pp=pz;div.dataset.pcj=cajaP;div.dataset.pcb=cubP;
 
     /* ----- construir selector dinámico de unidades ----- */
-    let opts='<select onchange="calcPrecio(this)">',tieneAlgo=false;
-    if(kgTf==='TRUE'){opts+=`
-      <option value="250">250 g</option>
-      <option value="500">500 g</option>
-      <option value="750">750 g</option>
-      <option value="1000" selected>1 kg</option>`;tieneAlgo=true;}
-    if(costTf==='TRUE'){opts+=`<option value="costal">Costal (${peso} kg)</option>`;tieneAlgo=true;}
-    if(cantPz==='TRUE'){opts+='<option value="pieza">Pieza</option>';tieneAlgo=true;}
-    if(cajaTf==='TRUE'){opts+='<option value="caja">Caja</option>';tieneAlgo=true;}
-    if(cubTf==='TRUE'){opts+='<option value="cubeta">Cubeta</option>';tieneAlgo=true;}
-    if(!tieneAlgo){opts+='<option value="unica" selected>Unidad única</option>';}
-    opts+='</select>';
-    /* ---------------------------------------------------- */
+const isTrue = v => v === true || v === 'TRUE' || v === 'true';
+
+let opts = '<select onchange="calcPrecio(this)">';
+let tieneAlgo = false;
+
+if (isTrue(kgTf)) {
+  opts += `
+    <option value="250">250 g</option>
+    <option value="500">500 g</option>
+    <option value="750">750 g</option>
+    <option value="1000" selected>1 kg</option>`;
+  tieneAlgo = true;
+}
+if (isTrue(costTf))  { opts += `<option value="costal">Costal (${peso} kg)</option>`; tieneAlgo = true; }
+if (isTrue(cantPz))  { opts +=  '<option value="pieza">Pieza</option>';             tieneAlgo = true; }
+if (isTrue(cajaTf))  { opts +=  '<option value="caja">Caja</option>';               tieneAlgo = true; }
+if (isTrue(cubTf))   { opts +=  '<option value="cubeta">Cubeta</option>';           tieneAlgo = true; }
+
+if (!tieneAlgo)      { opts +=  '<option value="unica" selected>Unidad única</option>'; }
+
+opts += '</select>';
+/* ---------------------------------------------------- */
 
     div.innerHTML=`
       <img src="${img||'https://via.placeholder.com/200x150?text=Sin+imagen'}" alt="${n}">
