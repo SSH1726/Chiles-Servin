@@ -182,21 +182,62 @@ function calcPrecio(sel){
   p.querySelector('.precio').textContent='$'+precio.toFixed(2);
 }
 function addToCart(btn){
-  const p=btn.closest('.producto'),sel=p.querySelector('select').value;
-  const precio=+p.querySelector('.precio').textContent.replace(/[^0-9.]/g,'');
-  const nombre=p.querySelector('h3').textContent;
+  const p   = btn.closest('.producto');
+  const sel = p.querySelector('select').value;
+  const precioUnit = +p.querySelector('.precio').textContent.replace(/[^0-9.]/g,'');
+  const nombre    = p.querySelector('h3').textContent;
   const ct = sel==='costal'?`Costal (${p.dataset.peso} kg)`:
-             sel==='pieza'?'Pieza':sel==='caja'?'Caja':sel==='cubeta'?'Cubeta':sel==='unica'?'Unidad':' '+sel+' g';
-  const c=cart();c.push({nombre,ct,precio});save(c);updateBadge();alert('Agregado al carrito');}
+             sel==='pieza'? 'Pieza':
+             sel==='caja'?  'Caja':
+             sel==='cubeta'?'Cubeta':
+             sel==='unica'? 'Unidad': sel+' g';
+  
+  const c   = cart();
+  const idx = c.findIndex(x=> x.nombre===nombre && x.ct===ct);
+  
+  if (idx > -1) {
+    // Ya existe, sumamos 1 unidad
+    c[idx].qty    += 1;
+    c[idx].precio += precioUnit;
+  } else {
+    // Nuevo ítem con qty = 1
+    c.push({nombre, ct, qty:1, precio: precioUnit});
+  }
+  save(c); updateBadge(); alert('Agregado al carrito');
+}
 function toggleCart(){const c=$('#carrito');c.style.display=c.style.display==='block'?'none':'block';renderCart();}
 function renderCart(){
-  const items=cart(),ci=$('#cartItems');ci.innerHTML='';let total=0;
-  items.forEach((it,i)=>{total+=it.precio;
-    ci.insertAdjacentHTML('beforeend',`<div class="carrito-item"><span>${it.nombre} (${it.ct})</span><span>$${it.precio.toFixed(2)} <button onclick="removeItem(${i})">x</button></span></div>`);
+  const items = cart();
+  const ci = $('#cartItems'); ci.innerHTML='';
+  let total = 0;
+
+  items.forEach((it, i) => {
+    total += it.precio;
+    ci.insertAdjacentHTML('beforeend',
+      `<div class="carrito-item">
+         <span>${it.nombre} (${it.ct}) <strong>x${it.qty}</strong></span>
+         <span>$${it.precio.toFixed(2)}
+           <button onclick="removeItem(${i})">x</button>
+         </span>
+       </div>`);
   });
-  $('#cartTotal').textContent=total.toFixed(2);
+  $('#cartTotal').textContent = total.toFixed(2);
 }
-function removeItem(i){const c=cart();c.splice(i,1);save(c);updateBadge();renderCart();}
+
+function removeItem(i){
+  const c = cart();
+  if (!c[i]) return;
+
+  // Resta una unidad
+  c[i].qty -= 1;
+  c[i].precio = +(c[i].precio / (c[i].qty + 1) * c[i].qty).toFixed(2); // recomputa subtotal
+
+  // Si ya no quedan unidades, elimina el ítem
+  if (c[i].qty <= 0) c.splice(i, 1);
+
+  save(c); updateBadge(); renderCart();
+}
+
 function sendWhatsApp(){
   const c=cart();if(!c.length){alert('Carrito vacío');return;}
   let msg='¡Hola! Quiero hacer un pedido:%0A';
