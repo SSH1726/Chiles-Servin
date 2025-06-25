@@ -196,15 +196,24 @@ function addToCart(btn){
   const idx = c.findIndex(x=> x.nombre===nombre && x.ct===ct);
   
   if (idx > -1) {
-    // Ya existe, sumamos 1 unidad
     c[idx].qty    += 1;
     c[idx].precio += precioUnit;
   } else {
-    // Nuevo ítem con qty = 1
     c.push({nombre, ct, qty:1, precio: precioUnit});
   }
-  save(c); updateBadge(); alert('Agregado al carrito');
+
+  save(c);
+  updateBadge();
+
+  // --- feedback visual en el botón ---
+  btn.textContent = '✔ Agregado';
+  btn.disabled = true;
+  setTimeout(()=>{
+    btn.textContent = 'Agregar';
+    btn.disabled = false;
+  }, 1000);
 }
+
 function toggleCart(){const c=$('#carrito');c.style.display=c.style.display==='block'?'none':'block';renderCart();}
 function renderCart(){
   const items = cart();
