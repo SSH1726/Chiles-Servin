@@ -59,6 +59,24 @@ select{width:100%;padding:6px;margin-bottom:6px}
 </header>
 
 <div class="buscador"><input id="search" placeholder="Buscar producto..." oninput="filter()"></div>
+  <!-- -------------- Descuento -------------- -->
+<div class="descuento" style="text-align:center; margin-bottom:12px;">
+  <input 
+    id="discountCode"
+    type="text"
+    placeholder="Introduce código de descuento"
+    style="padding:6px; width:200px; max-width:80%;"
+  >
+  <button
+    id="applyDiscountBtn"
+    onclick="applyDiscount()"
+    style="padding:6px 12px; margin-left:6px; cursor:pointer;"
+  >
+    Aplicar
+  </button>
+</div>
+<!-- --------------------------------------- -->
+  
 <div id="catBtns" class="categorias"></div>
 <div id="productos" class="productos"><p>Cargando…</p></div>
 
@@ -75,8 +93,28 @@ select{width:100%;padding:6px;margin-bottom:6px}
 <script>
 /* ---------- CONFIG ---------- */
 const SHEET_ID='1V3idgBFfpsIJdBs3Z6B8FmXOc9e6rGtF45Y_heR96B0'; // tu ID
-const QUERY='select A,B,C,D,E,F,G,H,I,J,K,L,M,N';            // columnas A-N
+const QUERY='select A,B,C,D,E,F,G,H,I,J,K,L,M,N,O';  // ahora A–O
 /* ---------------------------- */
+let discountActive = false;
+
+function applyDiscount(){
+  const code = document
+    .getElementById('discountCode')
+    .value
+    .trim()
+    .toUpperCase();
+  if(code === 'ESPECIAL'){
+    discountActive = true;
+    document.getElementById('discountCode').disabled = true;
+    document.getElementById('applyDiscountBtn').disabled = true;
+    // Recalcula TODOS los precios visibles:
+    document.querySelectorAll('.producto select')
+            .forEach(sel => calcPrecio(sel));
+    alert('Descuento ESPECIAL activado');
+  } else {
+    alert('Código inválido');
+  }
+}
 
 // Helpers
 const $=s=>document.querySelector(s),$$=s=>document.querySelectorAll(s);
@@ -109,11 +147,11 @@ function render(rows){
 
   // productos
   rows.forEach(r=>{
-    const [n,cat,p,img,pc,kgTf,costTf,peso,cantPz,pz, cajaTf, cajaP, cubTf,cubP]=r.c.map(c=>c?.v||'');
+    const [n,cat,p,img,pc,kgTf,costTf,peso,cantPz,pz,cajaTf,cajaP,cubTf,cubP, precioEsp]=r.c.map(c=>c?.v||'');
     const div=document.createElement('div');div.className='producto';
     div.dataset.cat=norm(cat);div.dataset.name=norm(n);
     div.dataset.pk=p;div.dataset.pc=pc;div.dataset.peso=peso;
-    div.dataset.pp=pz;div.dataset.pcj=cajaP;div.dataset.pcb=cubP;
+    div.dataset.pp=pz;div.dataset.pcj=cajaP;div.dataset.pcb=cubP;div.dataset.pes = precioEsp;
 
     /* ----- construir selector dinámico de unidades ----- */
 const isTrue = v => v === true || v === 'TRUE' || v === 'true';
@@ -159,16 +197,37 @@ function filter(){
   });
 }
 function calcPrecio(sel){
-  const p=sel.closest('.producto');
-  const v=sel.value,pk=+p.dataset.pk,pc=+p.dataset.pc,pp=+p.dataset.pp,pcj=+p.dataset.pcj,pcb=+p.dataset.pcb;
-  let precio=pk; // por defecto 1 kg
-  if(v==='750'||v==='500'||v==='250') precio=pk*(+v/1000);
-  else if(v==='costal') precio=pc;
-  else if(v==='pieza') precio=pp;
-  else if(v==='caja')  precio=pcj;
-  else if(v==='cubeta')precio=pcb;
-  p.querySelector('.precio').textContent='$'+precio.toFixed(2);
+  const p   = sel.closest('.producto');
+  const v   = sel.value;
+  const pk  = +p.dataset.pk;    // precio por kg normal
+  const pc  = +p.dataset.pc;    // precio costal
+  const pp  = +p.dataset.pp;    // precio pieza
+  const pcj = +p.dataset.pcj;   // precio caja
+  const pcb = +p.dataset.pcb;   // precio cubeta
+
+  // precio base: si activaste ESPECIAL y hay precio_especial en dataset.pes, úsalo
+  const unitPrice = (discountActive && p.dataset.pes)
+    ? +p.dataset.pes
+    : pk;
+
+  let precio = unitPrice;       // default: 1 kg a unitPrice
+
+  if (v==='750' || v==='500' || v==='250') {
+    // gramos → fracción de kg
+    precio = unitPrice * (v/1000);
+  } else if (v==='costal') {
+    precio = pc;
+  } else if (v==='pieza') {
+    precio = pp;
+  } else if (v==='caja') {
+    precio = pcj;
+  } else if (v==='cubeta') {
+    precio = pcb;
+  }
+
+  p.querySelector('.precio').textContent = '$' + precio.toFixed(2);
 }
+
 function addToCart(btn){
   const p   = btn.closest('.producto');
   const sel = p.querySelector('select').value;
@@ -236,12 +295,24 @@ function removeItem(i){
 }
 
 function sendWhatsApp(){
-  const c=cart();if(!c.length){alert('Carrito vacío');return;}
-  let msg='¡Hola! Quiero hacer un pedido:%0A';
-  c.forEach(it=>msg+=`- ${it.nombre} (${it.ct}): $${it.precio.toFixed(2)}%0A`);
-  msg+=`%0ATotal: $${c.reduce((s,i)=>s+i.precio,0).toFixed(2)}`;
-  window.open(`https://wa.me/524611267217?text=${msg}`,'_blank');
+  const c = cart();
+  if (!c.length) {
+    alert('Carrito vacío');
+    return;
+  }
+  let msg = '¡Hola! Quiero hacer un pedido:%0A';
+  c.forEach(it => {
+    // it.nombre → nombre del producto
+    // it.ct     → unidad (por ej. "1 kg")
+    // it.qty    → cantidad añadida (por ej. 5)
+    // it.precio → subtotal para esas 5 unidades
+    msg += `- ${it.nombre} (${it.ct} ×${it.qty}): $${it.precio.toFixed(2)}%0A`;
+  });
+  const total = c.reduce((sum, it) => sum + it.precio, 0).toFixed(2);
+  msg += `%0ATotal: $${total}`;
+  window.open(`https://wa.me/524611267217?text=${msg}`, '_blank');
 }
+
 updateBadge();
 </script>
 </body>
