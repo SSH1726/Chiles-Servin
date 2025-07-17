@@ -167,14 +167,36 @@ if (isTrue(kgTf)) {
     <option value="1000" selected>1 kg</option>`;
   tieneAlgo = true;
 }
-if (isTrue(costTf))  { opts += `<option value="costal">Costal (${peso} kg)</option>`; tieneAlgo = true; }
-if (isTrue(cantPz))  { opts +=  '<option value="pieza">Pieza</option>';             tieneAlgo = true; }
-if (isTrue(cajaTf))  { opts +=  '<option value="caja">Caja</option>';               tieneAlgo = true; }
-if (isTrue(cubTf))   { opts +=  '<option value="cubeta">Cubeta</option>';           tieneAlgo = true; }
 
-if (!tieneAlgo)      { opts +=  '<option value="unica" selected>Unidad única</option>'; }
+if (isTrue(costTf)) {
+  const pesoCostal = peso ? ` (${peso} kg)` : '';
+  opts += `<option value="costal">Costal${pesoCostal}</option>`;
+  tieneAlgo = true;
+}
+
+if (isTrue(cantPz)) {
+  opts += `<option value="pieza">Pieza</option>`;
+  tieneAlgo = true;
+}
+
+if (isTrue(cajaTf)) {
+  const pesoCaja = peso ? ` (${peso} kg)` : '';
+  opts += `<option value="caja">Caja${pesoCaja}</option>`;
+  tieneAlgo = true;
+}
+
+if (isTrue(cubTf)) {
+  const pesoCubeta = peso ? ` (${peso} kg)` : '';
+  opts += `<option value="cubeta">Cubeta${pesoCubeta}</option>`;
+  tieneAlgo = true;
+}
+
+if (!tieneAlgo) {
+  opts += `<option value="unica" selected>Unidad única</option>`;
+}
 
 opts += '</select>';
+
 /* ---------------------------------------------------- */
 
     div.innerHTML=`
