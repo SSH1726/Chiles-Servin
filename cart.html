@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Carrito - Chiles y Cereales Servín</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; background-color: #f9f1f1; }
+
+    .navbar {
+      background-color: #800000; color: white; padding: 10px 20px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .navbar img { height: 40px; }
+    .navbar h1 { margin: 0; font-size: 18px; flex-grow: 1; text-align: center; }
+    .navbar button { background-color: orange; border: none; border-radius: 5px; padding: 5px 10px; cursor: pointer; }
+
+    .cart-container {
+      max-width: 800px; margin: 30px auto; background: white; border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1); padding: 20px;
+    }
+    .cart-item {
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid #ddd; padding: 10px 0;
+    }
+    .cart-item img { width: 50px; height: auto; border-radius: 5px; }
+    .cart-item-info { flex-grow: 1; margin-left: 10px; }
+    .cart-item-info h4 { margin: 0 0 5px; font-size: 16px; }
+    .cart-item-info p { margin: 0; font-size: 14px; color: #333; }
+    .cart-item-price {
+      width: 80px;
+      text-align: center;
+      font-weight: bold;
+      color: green;
+    }
+    .cart-item-qty { margin: 0 10px; font-size: 14px; }
+    .delete-btn {
+      background-color: red; color: white; border: none; border-radius: 3px;
+      padding: 5px 8px; cursor: pointer;
+    }
+    .delete-btn:hover { background-color: darkred; }
+
+    .total {
+      text-align: right; font-size: 18px; font-weight: bold; margin-top: 20px;
+    }
+
+    .checkout-btn {
+      display: block; margin: 20px auto 0 auto; background-color: green; color: white;
+      border: none; border-radius: 5px; padding: 10px 20px; font-size: 16px; cursor: pointer;
+    }
+    .checkout-btn:hover { background-color: darkgreen; }
+  </style>
+</head>
+
+<body>
+
+  <div class="navbar">
+    <img src="https://a8df956abb.cbaul-cdnwnd.com/f87890b711a8506804ac4dab45807d6c/200000000-0f1d8101b8/700/servin%20logo.jpg?ph=a8df956abb" alt="Servin logo">
+    <h1>Carrito</h1>
+    <button onclick="window.location.href='index.html'">Volver a la tienda</button>
+  </div>
+
+  <div class="cart-container" id="cartContainer"></div>
+
+<div style="max-width:800px; margin:0 auto;">
+  <div class="total" id="cartTotal"></div>
+</div>
+
+
+
+  
+  <button class="checkout-btn", onclick="openModal()">Proceder al Pago</button>
+
+
+  <script>
+    function loadCart() {
+      const cartContainer = document.getElementById('cartContainer');
+      const cartTotal = document.getElementById('cartTotal');
+      let cartItems = JSON.parse(localStorage.getItem('cart')) || [];
+      let total = 0;
+
+      cartContainer.innerHTML = '';
+
+      if(cartItems.length === 0){
+        cartContainer.innerHTML = '<p>Tu carrito está vacío.</p>';
+        cartTotal.innerHTML = '';
+        return;
+      }
+
+      cartItems.forEach((item, index) => {
+        total += parseFloat(item.price) * item.quantity;
+
+        cartContainer.innerHTML += `
+          <div class="cart-item">
+            <img src="${item.image}" alt="${item.name}">
+            <div class="cart-item-info">
+              <h4>${item.name}</h4>
+              <p>Opción: ${item.option}</p>
+            </div>
+            <div class="cart-item-price">$${item.price}</div>
+            <div class="cart-item-qty">Qty: ${item.quantity}</div>
+            <button class="delete-btn" onclick="removeFromCart(${index})">Eliminar</button>
+          </div>
+        `;
+      });
+
+      cartTotal.innerHTML = `Total: $${total.toFixed(2)}`;
+    }
+
+    function removeFromCart(index) {
+      let cartItems = JSON.parse(localStorage.getItem('cart')) || [];
+      cartItems.splice(index, 1);
+      localStorage.setItem('cart', JSON.stringify(cartItems));
+      loadCart();
+    }
+
+    
+
+function openModal() {
+  document.getElementById('checkoutModal').style.display = 'flex';
+  document.getElementById('finalPrice').innerText = 'Total: $' + calculateCartTotal();
+}
+
+function closeModal() {
+  document.getElementById('checkoutModal').style.display = 'none';
+}
+
+function confirmOrder() {
+  const name = document.getElementById('customerName').value.trim();
+  const pickupDate = document.getElementById('pickupDate').value;
+
+  if (!name || !pickupDate) {
+    alert('Por favor, completa tu nombre y día de recolección.');
+    return;
+  }
+
+  let cartItems = JSON.parse(localStorage.getItem('cart')) || [];
+  const total = cartItems.reduce((sum, item) => sum + (parseFloat(item.price) * item.quantity), 0).toFixed(2);
+
+  let orders = JSON.parse(localStorage.getItem('orders')) || [];
+  orders.push({
+    id: Date.now(),
+    name,
+    pickupDate,
+    total,
+    products: cartItems
+  });
+
+  localStorage.setItem('orders', JSON.stringify(orders));
+
+  // Clear cart after order
+  localStorage.removeItem('cart');
+  alert('Pedido confirmado');
+
+  closeModal(); // Close modal after confirming
+  window.location.href = 'index.html'; // or 'orders.html'
+}
+
+
+
+
+
+
+
+
+    loadCart();
+  </script>
+
+
+<!-- Checkout Modal -->
+<div id="checkoutModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); z-index:9999; justify-content:center; align-items:center;">
+  <div style="background:white; padding:20px; border-radius:10px; max-width:400px; width:90%;">
+    <h2>Confirmar Pedido</h2>
+    <label>Nombre:</label><br>
+    <input type="text" id="customerName" style="width:100%; margin-bottom:10px;"><br>
+    <label>Día de recolección:</label><br>
+    <input type="date" id="pickupDate" style="width:100%; margin-bottom:10px;"><br>
+    <p id="finalPrice" style="font-weight:bold;"></p>
+    <button onclick="confirmOrder()" style="background:#800000; color:white; border:none; padding:10px 20px; border-radius:5px;">Confirmar Pedido</button>
+    <button onclick="closeModal()" style="background:grey; color:white; border:none; padding:10px 20px; border-radius:5px; margin-left:10px;">Cancelar</button>
+  </div>
+
+
+
+
+
+  
+</div>
+
+
+
+
+
+</body>
+</html>
