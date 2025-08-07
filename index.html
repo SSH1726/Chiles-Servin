@@ -135,6 +135,11 @@
     
     
   </div>
+<!-- Campo para ingresar el código de descuento -->
+<div style="text-align: center; margin-top: 20px;">
+  <label for="codigoDescuento" style="font-size: 18px; font-weight: bold;">¿Tienes un código de descuento?</label><br>
+  <input type="text" id="codigoDescuento" placeholder="Escribe aquí el código" style="padding: 10px; font-size: 16px; width: 250px; border-radius: 5px; border: 1px solid #ccc; margin-top: 10px;">
+</div>
 
   <div class="products"></div>
 
@@ -237,6 +242,7 @@ fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tq=${encodeURI
       cubeta: +r.c[12]?.v || 0,
       type: (r.c[8]?.v || r.c[10]?.v) ? 'piezaCaja' : 'granel'
     }));
+    
 
     renderProducts(products);
   })
@@ -247,54 +253,78 @@ fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tq=${encodeURI
 
 
 
-  
-  // NUEVA función para mostrar productos
-  function renderProducts(products) {
-    const productsContainer = document.querySelector('.products');
-    productsContainer.innerHTML = '';
+// Detectar si hay un código de descuento guardado
+let descuentoActivo = localStorage.getItem('descuentoActivo') === 'true';
 
-    products.sort((a, b) => a.name.localeCompare(b.name));
-
-    products.forEach(prod => {
-      let optionsHtml = '', firstPrice = '';
-
-      if (prod.type === 'piezaCaja') {
-        const pesoTexto = prod.peso ? ` (${prod.peso} kg)` : '';
-        optionsHtml = `
-          <option value="pieza">Pieza ($${prod.pieza})</option>
-          <option value="caja">Caja${pesoTexto} ($${prod.caja})</option>
-        `;
-        firstPrice = prod.pieza;
-      } else {
-        optionsHtml = `
-          <option value="250g">250 g ($${(prod.precio * 0.25).toFixed(2)})</option>
-          <option value="500g">500 g ($${(prod.precio * 0.5).toFixed(2)})</option>
-          <option value="750g">750 g ($${(prod.precio * 0.75).toFixed(2)})</option>
-          <option value="1kg">1 kg ($${prod.precio})</option>
-        `;
-        if (prod.precioCostal) {
-          const pesoTexto = prod.peso ? ` (${prod.peso} kg)` : '';
-          optionsHtml += `<option value="costal">Costal${pesoTexto} ($${prod.precioCostal})</option>`;
-        }
-        firstPrice = (prod.precio * 0.25).toFixed(2);
-      }
-
-      productsContainer.innerHTML += `
-        <div class="product-card" data-category="${prod.category}">
-          <img src="${prod.image}" alt="${prod.name}">
-          <h3>${prod.name}</h3>
-          <p class="price">$${firstPrice}</p>
-          <select onchange="updatePrice(this, '${encodeURIComponent(JSON.stringify(prod))}')">
-            ${optionsHtml}
-          </select>
-          <button onclick="addToCart(this)">Agregar</button>
-        </div>
-      `;
-    });
+// Escuchar el campo de código de descuento
+document.getElementById('codigoDescuento').addEventListener('input', function(e) {
+  const valor = e.target.value.trim();
+  if (valor.toUpperCase() === 'ESPECIAL') {
+    descuentoActivo = true;
+    localStorage.setItem('descuentoActivo', 'true');
+    renderProducts(productosGlobales); // recarga con descuento
+  } else {
+    descuentoActivo = false;
+    localStorage.removeItem('descuentoActivo');
+    renderProducts(productosGlobales); // recarga sin descuento
   }
-</script>
-
+});
     
+ let productosGlobales = []; // para poder recargar si cambia el código
+
+function renderProducts(products) {
+  productosGlobales = products; // guardar para futuras recargas
+  const productsContainer = document.querySelector('.products');
+  productsContainer.innerHTML = '';
+
+  products.sort((a, b) => a.name.localeCompare(b.name));
+
+  products.forEach(prod => {
+    let optionsHtml = '', firstPrice = '';
+
+    const usarPrecio = descuentoActivo ? prod.precioEspecial : prod.precioKg;
+
+    if (prod.porKg) {
+      optionsHtml += `<option value="kg">Por Kg ($${usarPrecio})</option>`;
+      firstPrice = usarPrecio;
+    }
+
+    if (prod.porCostal) {
+      const pesoTexto = prod.pesoCostalCaja ? ` (${prod.pesoCostalCaja} kg)` : '';
+      optionsHtml += `<option value="costal">Costal${pesoTexto} ($${prod.precioCostalCaja})</option>`;
+      if (!firstPrice) firstPrice = prod.precioCostalCaja;
+    }
+
+    if (prod.porPz) {
+      optionsHtml += `<option value="pieza">Por Pieza ($${prod.precioPz})</option>`;
+      if (!firstPrice) firstPrice = prod.precioPz;
+    }
+
+    if (prod.porCaja) {
+      const pesoTexto = prod.pesoCostalCaja ? ` (${prod.pesoCostalCaja} kg)` : '';
+      optionsHtml += `<option value="caja">Por Caja${pesoTexto} ($${prod.precioCaja})</option>`;
+      if (!firstPrice) firstPrice = prod.precioCaja;
+    }
+
+    if (prod.porCubeta) {
+      optionsHtml += `<option value="cubeta">Por Cubeta ($${prod.precioCubeta})</option>`;
+      if (!firstPrice) firstPrice = prod.precioCubeta;
+    }
+
+    productsContainer.innerHTML += `
+      <div class="product-card" data-category="${prod.category}">
+        <img src="${prod.image}" alt="${prod.name}">
+        <h3>${prod.name}</h3>
+        <p class="price">$${firstPrice}</p>
+        <select onchange="updatePrice(this, '${encodeURIComponent(JSON.stringify(prod))}')">
+          ${optionsHtml}
+        </select>
+        <button onclick="addToCart(this)">Agregar</button>
+      </div>
+    `;
+  });
+}
+
 
 
 <a href="https://wa.me/524611267217" target="_blank" class="whatsapp-btn">WhatsApp</a>
@@ -302,6 +332,7 @@ fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tq=${encodeURI
 
 </body>
 </html>
+
 
 
 
