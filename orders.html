@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pedidos - Chiles y Cereales Servín</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; background-color: #f9f1f1; }
+    .navbar {
+      background-color: #800000; color: white; padding: 10px 20px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .navbar img { max-height: 40px; height: auto; width: auto; }
+    .navbar h1 { margin: 0; font-size: 20px; flex-grow: 1; text-align: center; }
+    main { max-width: 800px; margin: 20px auto; padding: 10px; }
+    table { width: 100%; border-collapse: collapse; background: white; margin-top: 10px; }
+    th, td { border: 1px solid #ddd; padding: 10px; text-align: center; }
+    th { background-color: #800000; color: white; }
+  </style>
+</head>
+
+<body>
+  <div class="navbar">
+    <img src="https://a8df956abb.cbaul-cdnwnd.com/f87890b711a8506804ac4dab45807d6c/200000000-0f1d8101b8/700/servin%20logo.jpg?ph=a8df956abb" alt="Logo">
+    <h1>Pedidos</h1>
+    <button onclick="window.location.href='admin.html'">Volver</button>
+  </div>
+
+  <main>
+    <h2>Lista de Pedidos</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Día de Recogida</th>
+          <th>Total</th>
+          <th>Detalles</th>
+          <th>Eliminar</th>
+        </tr>
+      </thead>
+      <tbody id="ordersTable">
+        <!-- Orders will be loaded here -->
+      </tbody>
+    </table>
+  </main>
+
+  <script>
+
+
+function loadOrders() {
+  const ordersTable = document.getElementById('ordersTable');
+  const orders = JSON.parse(localStorage.getItem('orders')) || [];
+  ordersTable.innerHTML = '';
+
+  orders.forEach(order => {
+    ordersTable.innerHTML += `
+      <tr>
+        <td>${order.name}</td>
+        <td>${order.pickupDate}</td>
+        <td>$${order.total}</td>
+        <td><button onclick="showDetails(${order.id})">Ver Detalles</button></td>
+        <td><button onclick="deleteOrder(${order.id})" style="background:red; color:white; border:none; padding:5px 10px; border-radius:5px;">Eliminar</button></td>
+      </tr>
+    `;
+  });
+}
+
+
+function showDetails(orderId) {
+  const orders = JSON.parse(localStorage.getItem('orders')) || [];
+  const order = orders.find(o => o.id === orderId);
+  if (!order) return alert('Pedido no encontrado');
+
+  let detailsMsg = `Productos de ${order.name}:\n\n`;
+  order.products.forEach(item => {
+    detailsMsg += `${item.name} - Cantidad: ${item.quantity} - Precio: $${item.price}\n`;
+  });
+
+
+  alert(detailsMsg);
+}
+
+
+function deleteOrder(orderId) {
+  let orders = JSON.parse(localStorage.getItem('orders')) || [];
+  orders = orders.filter(o => o.id !== orderId);
+  localStorage.setItem('orders', JSON.stringify(orders));
+  loadOrders(); // refresh table
+  alert('Pedido eliminado');
+}
+
+
+    loadOrders();
+  </script>
+</body>
+</html>
