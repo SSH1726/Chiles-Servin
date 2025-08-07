@@ -6,11 +6,7 @@
   <title>Chiles y Cereales Servín</title>
   <style>
     body { font-family: Arial, sans-serif; margin: 0; background-color: #f9f1f1; }
-
-    .navbar {
-      background-color: #800000; color: white; padding: 10px 20px;
-      display: flex; align-items: center; justify-content: space-between; position: relative;
-    }
+    .navbar { background-color: #800000; color: white; padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; position: relative; }
     .navbar img { height: 40px; }
     .navbar h1 { margin: 0; font-size: 18px; flex-grow: 1; text-align: center; }
     .menu-icon { font-size: 26px; cursor: pointer; margin-right: 10px; transition: transform 0.2s; }
@@ -18,23 +14,22 @@
     .navbar button { background-color: orange; border: none; border-radius: 5px; padding: 5px 10px; cursor: pointer; }
 
     .dropdown-menu {
-  display: none; flex-direction: column; background-color: white; position: absolute;
-  top: 60px; left: 10px; right: 10px; max-width: 250px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.2); z-index: 999; border-radius: 5px;
-  animation: fadeIn 0.3s ease-in-out;
-}
+      display: none; flex-direction: column; background-color: white; position: absolute;
+      top: 60px; left: 10px; right: 10px; max-width: 250px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2); z-index: 999; border-radius: 5px;
+      animation: fadeIn 0.3s ease-in-out;
+    }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
 
-.dropdown-menu a {
-  padding: 12px 15px; text-decoration: none; color: #5a3d23; border-bottom: 1px solid #ddd;
-  transition: background 0.2s;
-}
-.dropdown-menu a:hover { background-color: #f9f9f9; }
-
+    .dropdown-menu a {
+      padding: 12px 15px; text-decoration: none; color: #5a3d23; border-bottom: 1px solid #ddd;
+      transition: background 0.2s;
+    }
+    .dropdown-menu a:hover { background-color: #f9f9f9; }
 
     .categories { text-align: center; margin: 10px; flex-wrap: wrap; }
     .categories button {
@@ -46,7 +41,6 @@
       display: grid; grid-template-columns: repeat(5, 1fr);
       gap: 20px; padding: 20px;
     }
-
 
     .product-card {
       background: white; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
@@ -63,53 +57,46 @@
     }
     .product-card button:hover { background-color: #a00000; }
 
-    .search-container {
-    text-align: center;
-    margin: 20px auto;
-    display: flex;
-    justify-content: center;
+    .search-container, .discount-container {
+      text-align: center;
+      margin: 20px auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
-    .search-container input[type="text"] {
-    padding: 10px;
-    width: 60%;
-    max-width: 400px;
-    font-size: 16px;
-    border: 1px solid #800000;
-    border-radius: 5px;
+    .search-container input[type="text"],
+    .discount-container input[type="text"] {
+      padding: 10px;
+      width: 60%;
+      max-width: 400px;
+      font-size: 16px;
+      border: 1px solid #800000;
+      border-radius: 5px;
     }
 
-.whatsapp-btn {
-  position: fixed;          /* 🔒 stays in place when scrolling */
-  bottom: 20px;             /* distance from bottom */
-  right: 20px;              /* distance from right */
-  background-color: #25D366;
-  color: white;
-  padding: 12px 20px;
-  border-radius: 50px;
-  font-weight: bold;
-  font-size: 18px;
-  text-align: center;
-  text-decoration: none;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-  transition: background-color 0.3s ease;
-  z-index: 999;             /* 🥇 ensures it's above other elements */
-}
+    .whatsapp-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: #25D366;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 50px;
+      font-weight: bold;
+      font-size: 18px;
+      text-align: center;
+      text-decoration: none;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      transition: background-color 0.3s ease;
+      z-index: 999;
+    }
 
-.whatsapp-btn:hover {
-  background-color: #1ebe57;
-}
-
-
-
-
-
-
+    .whatsapp-btn:hover { background-color: #1ebe57; }
   </style>
 </head>
 
 <body>
-
   <div class="navbar">
     <div class="menu-icon" onclick="toggleMenu()">☰</div>
     <img src="https://a8df956abb.cbaul-cdnwnd.com/f87890b711a8506804ac4dab45807d6c/200000000-0f1d8101b8/700/servin%20logo.jpg?ph=a8df956abb" alt="Servin logo">
@@ -118,66 +105,123 @@
   </div>
 
   <div class="dropdown-menu" id="dropdownMenu">
-  <a href="index.html">Haz tu pedido!</a>
-  <a href="aboutus.html">Sobre Nosotros</a>
-  <a href="#">Comentarios</a>
-</div>
-
-
-
-<div class="search-container">
-  <input type="text" id="searchInput" placeholder="Buscar producto..." onkeyup="searchProducts()">
-</div>
-
-
-  <!-- Categories -->
-  <div class="categories">
-    
-    
+    <a href="index.html">Haz tu pedido!</a>
+    <a href="aboutus.html">Sobre Nosotros</a>
+    <a href="#">Comentarios</a>
   </div>
-<!-- Campo para ingresar el código de descuento -->
-<div style="text-align: center; margin-top: 20px;">
-  <label for="codigoDescuento" style="font-size: 18px; font-weight: bold;">¿Tienes un código de descuento?</label><br>
-  <input type="text" id="codigoDescuento" placeholder="Escribe aquí el código" style="padding: 10px; font-size: 16px; width: 250px; border-radius: 5px; border: 1px solid #ccc; margin-top: 10px;">
-</div>
 
+  <div class="search-container">
+    <input type="text" id="searchInput" placeholder="Buscar producto..." onkeyup="searchProducts()">
+  </div>
+
+  <div class="discount-container">
+    <p><strong>¿Tienes un código de descuento?</strong></p>
+    <input type="text" id="discountInput" placeholder="Escribe aquí el código" onkeyup="checkDiscount()">
+  </div>
+
+  <div class="categories"></div>
   <div class="products"></div>
 
-  <script>
-    function toggleMenu() {
-  const menu = document.getElementById('dropdownMenu');
-  menu.style.display = (menu.style.display === 'flex') ? 'none' : 'flex';
-}
+  <a href="https://wa.me/524611267217" target="_blank" class="whatsapp-btn">WhatsApp</a>
 
+  <script>
+    let productosGlobales = [];
+    let descuentoActivo = localStorage.getItem('descuentoActivo') === 'true';
+
+    function toggleMenu() {
+      const menu = document.getElementById('dropdownMenu');
+      menu.style.display = (menu.style.display === 'flex') ? 'none' : 'flex';
+    }
 
     function searchProducts() {
-  const input = document.getElementById('searchInput').value.toLowerCase();
-  const productCards = document.querySelectorAll('.product-card');
+      const input = document.getElementById('searchInput').value.toLowerCase();
+      const productCards = document.querySelectorAll('.product-card');
+      productCards.forEach(card => {
+        const name = card.querySelector('h3').innerText.toLowerCase();
+        card.style.display = name.includes(input) ? 'block' : 'none';
+      });
+    }
 
-  productCards.forEach(card => {
-    const name = card.querySelector('h3').innerText.toLowerCase();
-    card.style.display = name.includes(input) ? 'block' : 'none';
-  });
-}
+    function checkDiscount() {
+      const code = document.getElementById('discountInput').value.trim().toUpperCase();
+      if (code === 'ESPECIAL') {
+        localStorage.setItem('descuentoActivo', 'true');
+        descuentoActivo = true;
+      } else {
+        localStorage.setItem('descuentoActivo', 'false');
+        descuentoActivo = false;
+      }
+      renderProducts(productosGlobales);
+    }
 
+    function renderProducts(products) {
+      productosGlobales = products;
+      const container = document.querySelector('.products');
+      container.innerHTML = '';
+      products.forEach(prod => {
+        let optionsHtml = '';
+        const useSpecial = descuentoActivo && prod.precioEspecial;
+        if (prod.porKg) {
+          const base = useSpecial ? prod.precioEspecial : prod.precioKg;
+          optionsHtml += `<option value="kg">1 kg ($${base})</option>`;
+          optionsHtml += `<option value="250g">250 g ($${(base * 0.25).toFixed(2)})</option>`;
+          optionsHtml += `<option value="500g">500 g ($${(base * 0.5).toFixed(2)})</option>`;
+          optionsHtml += `<option value="750g">750 g ($${(base * 0.75).toFixed(2)})</option>`;
+        }
+        if (prod.porCostal) {
+          const precio = useSpecial ? prod.precioEspecial : prod.precioCostalCaja;
+          optionsHtml += `<option value="costal">Costal (${prod.pesoCostalCaja} kg) ($${precio})</option>`;
+        }
+        if (prod.porPz) {
+          const precio = useSpecial ? prod.precioEspecial : prod.precioPz;
+          optionsHtml += `<option value="pieza">Pieza ($${precio})</option>`;
+        }
+        if (prod.porCaja) {
+          const precio = useSpecial ? prod.precioEspecial : prod.precioCaja;
+          optionsHtml += `<option value="caja">Caja (${prod.pesoCostalCaja} kg) ($${precio})</option>`;
+        }
+        if (prod.porCubeta) {
+          const precio = useSpecial ? prod.precioEspecial : prod.precioCubeta;
+          optionsHtml += `<option value="cubeta">Cubeta ($${precio})</option>`;
+        }
+
+        const primerPrecio = useSpecial && prod.precioEspecial ? prod.precioEspecial : (
+          prod.precioKg || prod.precioCostalCaja || prod.precioPz || prod.precioCaja || prod.precioCubeta || 0
+        );
+
+        container.innerHTML += `
+          <div class="product-card" data-category="${prod.category}">
+            <img src="${prod.image}" alt="${prod.name}">
+            <h3>${prod.name}</h3>
+            <p class="price">$${primerPrecio}</p>
+            <select onchange="updatePrice(this, '${encodeURIComponent(JSON.stringify(prod))}')">
+              ${optionsHtml}
+            </select>
+            <button onclick="addToCart(this)">Agregar</button>
+          </div>
+        `;
+      });
+    }
 
     function updatePrice(select, prodStr) {
       const prod = JSON.parse(decodeURIComponent(prodStr));
       const selected = select.value;
       const priceElement = select.parentElement.querySelector('.price');
-      let newPrice = '';
+      const useSpecial = descuentoActivo && prod.precioEspecial;
+      let newPrice = 0;
 
-      if (prod.type === 'piezaCaja') {
-        newPrice = (selected === 'pieza') ? prod.pieza : prod.caja;
-      } else {
-        if (selected === '250g') newPrice = prod.precio250g;
-        else if (selected === '500g') newPrice = prod.precio500g;
-        else if (selected === '750g') newPrice = prod.precio750g;
-        else if (selected === '1kg') newPrice = prod.precio1kg;
-        else if (selected === prod.costalLabel) newPrice = prod.precioCostal;
+      switch (selected) {
+        case '250g': newPrice = (prod.precioKg * 0.25).toFixed(2); break;
+        case '500g': newPrice = (prod.precioKg * 0.5).toFixed(2); break;
+        case '750g': newPrice = (prod.precioKg * 0.75).toFixed(2); break;
+        case 'kg': newPrice = useSpecial ? prod.precioEspecial : prod.precioKg; break;
+        case 'costal': newPrice = useSpecial ? prod.precioEspecial : prod.precioCostalCaja; break;
+        case 'pieza': newPrice = useSpecial ? prod.precioEspecial : prod.precioPz; break;
+        case 'caja': newPrice = useSpecial ? prod.precioEspecial : prod.precioCaja; break;
+        case 'cubeta': newPrice = useSpecial ? prod.precioEspecial : prod.precioCubeta; break;
       }
 
-      priceElement.innerHTML = `$${newPrice}`;
+      priceElement.innerText = `$${newPrice}`;
     }
 
     function addToCart(button) {
@@ -201,142 +245,49 @@
       });
     }
 
-    function loadCategories() {
-  const categoryContainer = document.querySelector('.categories');
-  const categories = JSON.parse(localStorage.getItem('categories')) || [];
-
-  categoryContainer.innerHTML = '<button onclick="filterByCategory(\'Ver todos\')">Ver todos</button>';
-
-  categories.forEach(cat => {
-    categoryContainer.innerHTML += `<button onclick="filterByCategory('${cat.name}')">${cat.name}</button>`;
-
-  });
-}
-
-loadCategories();
-
-const SHEET_ID = '1V3idgBFfpsIJdBs3Z6B8FmXOc9e6rGtF45Y_heR96B0';
-const QUERY = 'select A,B,C,D,E,F,G,H,I,J,K,L,M,N,O';
-
-fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tq=${encodeURIComponent(QUERY)}`)
-
-  .then(res => res.text())
-  .then(rep => {
-    if (rep.trim().startsWith('<')) {
-      throw new Error('❌ La hoja regresó HTML en lugar de datos JSON. Revisa si está publicada correctamente.');
+    function loadCategories(products) {
+      const categoryContainer = document.querySelector('.categories');
+      const categorias = [...new Set(products.map(p => p.category))];
+      categoryContainer.innerHTML = '<button onclick="filterByCategory(\'Ver todos\')">Ver todos</button>';
+      categorias.forEach(cat => {
+        categoryContainer.innerHTML += `<button onclick="filterByCategory('${cat}')">${cat}</button>`;
+      });
     }
 
-    const jsonData = JSON.parse(rep.substr(47).slice(0, -2));
-    const rows = jsonData.table.rows;
+    const SHEET_ID = '1V3idgBFfpsIJdBs3Z6B8FmXOc9e6rGtF45Y_heR96B0';
+    const QUERY = 'select A,B,C,D,E,F,G,H,I,J,K,L,M,N,O';
 
-    const products = rows.map(r => ({
-      name: r.c[0]?.v || '',
-      category: r.c[1]?.v || '',
-      precio: +r.c[2]?.v || 0,
-      image: r.c[3]?.v || 'https://via.placeholder.com/150',
-      precioCostal: +r.c[4]?.v || 0,
-      costalLabel: 'costal',
-      peso: +r.c[5]?.v || 0,
-      pieza: +r.c[8]?.v || 0,
-      caja: +r.c[10]?.v || 0,
-      cubeta: +r.c[12]?.v || 0,
-      type: (r.c[8]?.v || r.c[10]?.v) ? 'piezaCaja' : 'granel'
-    }));
-    
+    fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tq=${encodeURIComponent(QUERY)}`)
+      .then(res => res.text())
+      .then(rep => {
+        const jsonData = JSON.parse(rep.substr(47).slice(0, -2));
+        const rows = jsonData.table.rows;
 
-    renderProducts(products);
-  })
-  .catch(err => {
-    console.error('Error cargando productos:', err);
-    document.querySelector('.products').innerHTML = '<p>Error al cargar productos.</p>';
-  });
+        const products = rows.map(r => ({
+          name: r.c[0]?.v || '',
+          category: r.c[1]?.v || '',
+          precioKg: +r.c[2]?.v || 0,
+          image: r.c[3]?.v || 'https://via.placeholder.com/150',
+          precioCostalCaja: +r.c[4]?.v || 0,
+          porKg: r.c[5]?.v === 'TRUE',
+          porCostal: r.c[6]?.v === 'TRUE',
+          pesoCostalCaja: +r.c[7]?.v || 0,
+          porPz: r.c[8]?.v === 'TRUE',
+          precioPz: +r.c[9]?.v || 0,
+          porCaja: r.c[10]?.v === 'TRUE',
+          precioCaja: +r.c[11]?.v || 0,
+          porCubeta: r.c[12]?.v === 'TRUE',
+          precioCubeta: +r.c[13]?.v || 0,
+          precioEspecial: +r.c[14]?.v || 0
+        }));
 
-
-
-// Detectar si hay un código de descuento guardado
-let descuentoActivo = localStorage.getItem('descuentoActivo') === 'true';
-
-// Escuchar el campo de código de descuento
-document.getElementById('codigoDescuento').addEventListener('input', function(e) {
-  const valor = e.target.value.trim();
-  if (valor.toUpperCase() === 'ESPECIAL') {
-    descuentoActivo = true;
-    localStorage.setItem('descuentoActivo', 'true');
-    renderProducts(productosGlobales); // recarga con descuento
-  } else {
-    descuentoActivo = false;
-    localStorage.removeItem('descuentoActivo');
-    renderProducts(productosGlobales); // recarga sin descuento
-  }
-});
-    
- let productosGlobales = []; // para poder recargar si cambia el código
-
-function renderProducts(products) {
-  productosGlobales = products; // guardar para futuras recargas
-  const productsContainer = document.querySelector('.products');
-  productsContainer.innerHTML = '';
-
-  products.sort((a, b) => a.name.localeCompare(b.name));
-
-  products.forEach(prod => {
-    let optionsHtml = '', firstPrice = '';
-
-    const usarPrecio = descuentoActivo ? prod.precioEspecial : prod.precioKg;
-
-    if (prod.porKg) {
-      optionsHtml += `<option value="kg">Por Kg ($${usarPrecio})</option>`;
-      firstPrice = usarPrecio;
-    }
-
-    if (prod.porCostal) {
-      const pesoTexto = prod.pesoCostalCaja ? ` (${prod.pesoCostalCaja} kg)` : '';
-      optionsHtml += `<option value="costal">Costal${pesoTexto} ($${prod.precioCostalCaja})</option>`;
-      if (!firstPrice) firstPrice = prod.precioCostalCaja;
-    }
-
-    if (prod.porPz) {
-      optionsHtml += `<option value="pieza">Por Pieza ($${prod.precioPz})</option>`;
-      if (!firstPrice) firstPrice = prod.precioPz;
-    }
-
-    if (prod.porCaja) {
-      const pesoTexto = prod.pesoCostalCaja ? ` (${prod.pesoCostalCaja} kg)` : '';
-      optionsHtml += `<option value="caja">Por Caja${pesoTexto} ($${prod.precioCaja})</option>`;
-      if (!firstPrice) firstPrice = prod.precioCaja;
-    }
-
-    if (prod.porCubeta) {
-      optionsHtml += `<option value="cubeta">Por Cubeta ($${prod.precioCubeta})</option>`;
-      if (!firstPrice) firstPrice = prod.precioCubeta;
-    }
-
-    productsContainer.innerHTML += `
-      <div class="product-card" data-category="${prod.category}">
-        <img src="${prod.image}" alt="${prod.name}">
-        <h3>${prod.name}</h3>
-        <p class="price">$${firstPrice}</p>
-        <select onchange="updatePrice(this, '${encodeURIComponent(JSON.stringify(prod))}')">
-          ${optionsHtml}
-        </select>
-        <button onclick="addToCart(this)">Agregar</button>
-      </div>
-    `;
-  });
-}
-
-
-
-<a href="https://wa.me/524611267217" target="_blank" class="whatsapp-btn">WhatsApp</a>
-
-
+        loadCategories(products);
+        renderProducts(products);
+      })
+      .catch(err => {
+        console.error('Error cargando productos:', err);
+        document.querySelector('.products').innerHTML = '<p>Error al cargar productos.</p>';
+      });
+  </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
