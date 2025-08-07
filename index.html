@@ -260,7 +260,7 @@ loadCategories();
   const SHEET_ID = '1V3idgBFfpsIJdBs3Z6B8FmXOc9e6rGtF45Y_heR96B0';
   const QUERY = 'select A,B,C,D,E,F,G,H,I,J,K,L,M,N,O'; // Ajusta según columnas reales
 
-  fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tq=${encodeURIComponent(QUERY)}`)
+  fetch(`https://docs.google.com/spreadsheets/d/${1V3idgBFfpsIJdBs3Z6B8FmXOc9e6rGtF45Y_heR96B0}/gviz/tq?tq=${encodeURIComponent(QUERY)}`)
     .then(res => res.text())
     .then(rep => {
       const jsonData = JSON.parse(rep.substr(47).slice(0, -2));
@@ -346,4 +346,5 @@ loadCategories();
 
 </body>
 </html>
+
 
