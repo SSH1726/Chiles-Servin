@@ -159,7 +159,7 @@
 
     function loadProducts() {
       const productsContainer = document.querySelector('.products');
-      const products = JSON.parse(localStorage.getItem('products')) || [];
+      
 
       products.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
 
@@ -255,8 +255,90 @@
 loadCategories();
 
 
-    loadProducts();
-  </script>
+   
+<script>
+  const SHEET_ID = '1V3idgBFfpsIJdBs3Z6B8FmXOc9e6rGtF45Y_heR96B0';
+  const QUERY = 'select A,B,C,D,E,F,G,H,I,J,K,L,M,N,O'; // Ajusta según columnas reales
+
+  fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tq=${encodeURIComponent(QUERY)}`)
+    .then(res => res.text())
+    .then(rep => {
+      const jsonData = JSON.parse(rep.substr(47).slice(0, -2));
+      const rows = jsonData.table.rows;
+
+      const products = rows.map(r => ({
+        name: r.c[0]?.v || '',
+        category: r.c[1]?.v || '',
+        precio: +r.c[2]?.v || 0,
+        image: r.c[3]?.v || 'https://via.placeholder.com/150',
+        precioCostal: +r.c[4]?.v || 0,
+        costalLabel: 'costal',
+        peso: +r.c[5]?.v || 0,
+        pieza: +r.c[8]?.v || 0,
+        caja: +r.c[10]?.v || 0,
+        cubeta: +r.c[12]?.v || 0,
+        type: (r.c[8]?.v || r.c[10]?.v) ? 'piezaCaja' : 'granel'
+      }));
+
+      renderProducts(products);
+    })
+    .catch(err => {
+      console.error('Error cargando productos:', err);
+      document.querySelector('.products').innerHTML = '<p>Error al cargar productos.</p>';
+    });
+
+  // Reemplaza esta función
+  function loadProducts() {
+    // ya no se necesita
+  }
+
+  // NUEVA función para mostrar productos
+  function renderProducts(products) {
+    const productsContainer = document.querySelector('.products');
+    productsContainer.innerHTML = '';
+
+    products.sort((a, b) => a.name.localeCompare(b.name));
+
+    products.forEach(prod => {
+      let optionsHtml = '', firstPrice = '';
+
+      if (prod.type === 'piezaCaja') {
+        const pesoTexto = prod.peso ? ` (${prod.peso} kg)` : '';
+        optionsHtml = `
+          <option value="pieza">Pieza ($${prod.pieza})</option>
+          <option value="caja">Caja${pesoTexto} ($${prod.caja})</option>
+        `;
+        firstPrice = prod.pieza;
+      } else {
+        optionsHtml = `
+          <option value="250g">250 g ($${(prod.precio * 0.25).toFixed(2)})</option>
+          <option value="500g">500 g ($${(prod.precio * 0.5).toFixed(2)})</option>
+          <option value="750g">750 g ($${(prod.precio * 0.75).toFixed(2)})</option>
+          <option value="1kg">1 kg ($${prod.precio})</option>
+        `;
+        if (prod.precioCostal) {
+          const pesoTexto = prod.peso ? ` (${prod.peso} kg)` : '';
+          optionsHtml += `<option value="costal">Costal${pesoTexto} ($${prod.precioCostal})</option>`;
+        }
+        firstPrice = (prod.precio * 0.25).toFixed(2);
+      }
+
+      productsContainer.innerHTML += `
+        <div class="product-card" data-category="${prod.category}">
+          <img src="${prod.image}" alt="${prod.name}">
+          <h3>${prod.name}</h3>
+          <p class="price">$${firstPrice}</p>
+          <select onchange="updatePrice(this, '${encodeURIComponent(JSON.stringify(prod))}')">
+            ${optionsHtml}
+          </select>
+          <button onclick="addToCart(this)">Agregar</button>
+        </div>
+      `;
+    });
+  }
+</script>
+
+    
 
 
 <a href="https://wa.me/524611267217" target="_blank" class="whatsapp-btn">WhatsApp</a>
@@ -264,3 +346,4 @@ loadCategories();
 
 </body>
 </html>
+
