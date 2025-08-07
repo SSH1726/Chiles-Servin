@@ -210,41 +210,41 @@
 
 loadCategories();
 
+const SHEET_ID = '1V3idgBFfpsIJdBs3Z6B8FmXOc9e6rGtF45Y_heR96B0';
+const QUERY = 'select A,B,C,D,E,F,G,H,I,J,K,L,M,N,O';
 
-  const SHEET_ID = '1V3idgBFfpsIJdBs3Z6B8FmXOc9e6rGtF45Y_heR96B0';
-  const QUERY = 'select A,B,C,D,E,F,G,H,I,J,K,L,M,N,O'; // Ajusta según columnas reales
+fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tq=${encodeURIComponent(QUERY)}`)
 
-  fetch(`https://docs.google.com/spreadsheets/d/${1V3idgBFfpsIJdBs3Z6B8FmXOc9e6rGtF45Y_heR96B0}/gviz/tq?tq=${encodeURIComponent(QUERY)}`)
-    .then(res => res.text())
-    .then(rep => {
-  if (rep.trim().startsWith('<')) {
-    throw new Error('❌ La hoja regresó HTML en lugar de datos JSON. Revisa si está publicada correctamente.');
-  }
+  .then(res => res.text())
+  .then(rep => {
+    if (rep.trim().startsWith('<')) {
+      throw new Error('❌ La hoja regresó HTML en lugar de datos JSON. Revisa si está publicada correctamente.');
+    }
 
-  const jsonData = JSON.parse(rep.substr(47).slice(0, -2));
+    const jsonData = JSON.parse(rep.substr(47).slice(0, -2));
+    const rows = jsonData.table.rows;
 
-      const rows = jsonData.table.rows;
+    const products = rows.map(r => ({
+      name: r.c[0]?.v || '',
+      category: r.c[1]?.v || '',
+      precio: +r.c[2]?.v || 0,
+      image: r.c[3]?.v || 'https://via.placeholder.com/150',
+      precioCostal: +r.c[4]?.v || 0,
+      costalLabel: 'costal',
+      peso: +r.c[5]?.v || 0,
+      pieza: +r.c[8]?.v || 0,
+      caja: +r.c[10]?.v || 0,
+      cubeta: +r.c[12]?.v || 0,
+      type: (r.c[8]?.v || r.c[10]?.v) ? 'piezaCaja' : 'granel'
+    }));
 
-      const products = rows.map(r => ({
-        name: r.c[0]?.v || '',
-        category: r.c[1]?.v || '',
-        precio: +r.c[2]?.v || 0,
-        image: r.c[3]?.v || 'https://via.placeholder.com/150',
-        precioCostal: +r.c[4]?.v || 0,
-        costalLabel: 'costal',
-        peso: +r.c[5]?.v || 0,
-        pieza: +r.c[8]?.v || 0,
-        caja: +r.c[10]?.v || 0,
-        cubeta: +r.c[12]?.v || 0,
-        type: (r.c[8]?.v || r.c[10]?.v) ? 'piezaCaja' : 'granel'
-      }));
+    renderProducts(products);
+  })
+  .catch(err => {
+    console.error('Error cargando productos:', err);
+    document.querySelector('.products').innerHTML = '<p>Error al cargar productos.</p>';
+  });
 
-      renderProducts(products);
-    })
-    .catch(err => {
-      console.error('Error cargando productos:', err);
-      document.querySelector('.products').innerHTML = '<p>Error al cargar productos.</p>';
-    });
 
 
   
@@ -302,6 +302,7 @@ loadCategories();
 
 </body>
 </html>
+
 
 
 
