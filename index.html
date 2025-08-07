@@ -156,50 +156,6 @@
 }
 
 
-
-    function loadProducts() {
-      const productsContainer = document.querySelector('.products');
-      
-
-      products.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
-
-
-      productsContainer.innerHTML = '';
-
-      products.forEach(prod => {
-        let optionsHtml = '', firstPrice = '';
-
-        if (prod.type === 'piezaCaja') {
-          optionsHtml = `
-            <option value="pieza">Pieza ($${prod.pieza})</option>
-            <option value="caja">Caja ($${prod.caja})</option>
-          `;
-          firstPrice = prod.pieza;
-        } else {
-          optionsHtml = `
-            <option value="250g">250 g ($${prod.precio250g})</option>
-            <option value="500g">500 g ($${prod.precio500g})</option>
-            <option value="750g">750 g ($${prod.precio750g})</option>
-            <option value="1kg">1 kg ($${prod.precio1kg})</option>
-            <option value="${prod.costalLabel}">${prod.costalLabel} ($${prod.precioCostal})</option>
-          `;
-          firstPrice = prod.precio250g; 
-        }
-
-        productsContainer.innerHTML += `
-          <div class="product-card" data-category="${prod.category}">
-            <img src="${prod.image}" alt="${prod.name}">
-            <h3>${prod.name}</h3>
-            <p class="price">$${firstPrice}</p>
-            <select onchange="updatePrice(this, '${encodeURIComponent(JSON.stringify(prod))}')">
-              ${optionsHtml}
-            </select>
-            <button onclick="addToCart(this)">Agregar</button>
-          </div>
-        `;
-      });
-    }
-
     function updatePrice(select, prodStr) {
       const prod = JSON.parse(decodeURIComponent(prodStr));
       const selected = select.value;
@@ -344,6 +300,7 @@ loadCategories();
 
 </body>
 </html>
+
 
 
 
