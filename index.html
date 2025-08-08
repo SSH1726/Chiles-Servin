@@ -154,54 +154,76 @@
       renderProducts(productosGlobales);
     }
 
-    function renderProducts(products) {
-      productosGlobales = products;
-      const container = document.querySelector('.products');
-      container.innerHTML = '';
-      products.forEach(prod => {
+function renderProducts(products) {
+    const productsContainer = document.querySelector('.products');
+    productsContainer.innerHTML = '';
+
+    products.sort((a, b) => a.name.localeCompare(b.name));
+
+    products.forEach(prod => {
         let optionsHtml = '';
-        const useSpecial = descuentoActivo && prod.precioEspecial;
+        let firstPrice = '';
+        
+        // Detectar si está activo el código de descuento
+        const descuentoActivo = window.codigoDescuentoActivo === true;
+
+        // Usar precios especiales si aplica
+        const precioKg = descuentoActivo && prod.precioEspecial ? prod.precioEspecial : prod.precio;
+        const precioCostal = descuentoActivo && prod.precioEspecial ? prod.precioEspecial : prod.precioCostal;
+        const precioPz = descuentoActivo && prod.precioEspecial ? prod.precioEspecial : prod.precioPz;
+        const precioCaja = descuentoActivo && prod.precioEspecial ? prod.precioEspecial : prod.precioCaja;
+        const precioCubeta = descuentoActivo && prod.precioEspecial ? prod.precioEspecial : prod.precioCubeta;
+
+        // Opciones dinámicas
         if (prod.porKg) {
-          const base = useSpecial ? prod.precioEspecial : prod.precioKg;
-          optionsHtml += `<option value="kg">1 kg ($${base})</option>`;
-          optionsHtml += `<option value="250g">250 g ($${(base * 0.25).toFixed(2)})</option>`;
-          optionsHtml += `<option value="500g">500 g ($${(base * 0.5).toFixed(2)})</option>`;
-          optionsHtml += `<option value="750g">750 g ($${(base * 0.75).toFixed(2)})</option>`;
+            optionsHtml += `<option value="kg">1 kg ($${precioKg})</option>`;
+            firstPrice = precioKg;
         }
         if (prod.porCostal) {
-          const precio = useSpecial ? prod.precioEspecial : prod.precioCostalCaja;
-          optionsHtml += `<option value="costal">Costal (${prod.pesoCostalCaja} kg) ($${precio})</option>`;
+            const pesoTexto = prod.pesoCostal ? ` (${prod.pesoCostal} kg)` : '';
+            optionsHtml += `<option value="costal">Costal${pesoTexto} ($${precioCostal})</option>`;
+            if (!firstPrice) firstPrice = precioCostal;
         }
         if (prod.porPz) {
-          const precio = useSpecial ? prod.precioEspecial : prod.precioPz;
-          optionsHtml += `<option value="pieza">Pieza ($${precio})</option>`;
+            optionsHtml += `<option value="pieza">Pieza ($${precioPz})</option>`;
+            if (!firstPrice) firstPrice = precioPz;
         }
         if (prod.porCaja) {
-          const precio = useSpecial ? prod.precioEspecial : prod.precioCaja;
-          optionsHtml += `<option value="caja">Caja (${prod.pesoCostalCaja} kg) ($${precio})</option>`;
+            const pesoTexto = prod.pesoCostal ? ` (${prod.pesoCostal} kg)` : '';
+            optionsHtml += `<option value="caja">Caja${pesoTexto} ($${precioCaja})</option>`;
+            if (!firstPrice) firstPrice = precioCaja;
         }
         if (prod.porCubeta) {
-          const precio = useSpecial ? prod.precioEspecial : prod.precioCubeta;
-          optionsHtml += `<option value="cubeta">Cubeta ($${precio})</option>`;
+            optionsHtml += `<option value="cubeta">Cubeta ($${precioCubeta})</option>`;
+            if (!firstPrice) firstPrice = precioCubeta;
         }
 
-        const primerPrecio = useSpecial && prod.precioEspecial ? prod.precioEspecial : (
-          prod.precioKg || prod.precioCostalCaja || prod.precioPz || prod.precioCaja || prod.precioCubeta || 0
-        );
+        // Fallback por si no hay opciones
+        if (!optionsHtml) {
+            optionsHtml = `<option value="unico">Precio único ($${precioKg})</option>`;
+            firstPrice = precioKg;
+        }
 
-        container.innerHTML += `
-          <div class="product-card" data-category="${prod.category}">
-            <img src="${prod.image}" alt="${prod.name}">
-            <h3>${prod.name}</h3>
-            <p class="price">$${primerPrecio}</p>
-            <select onchange="updatePrice(this, '${encodeURIComponent(JSON.stringify(prod))}')">
-              ${optionsHtml}
-            </select>
-            <button onclick="addToCart(this)">Agregar</button>
-          </div>
+        // Imagen con respaldo
+        const imgSrc = prod.image && prod.image.startsWith('http') 
+            ? prod.image 
+            : 'https://via.placeholder.com/150';
+
+        // Agregar producto al DOM
+        productsContainer.innerHTML += `
+            <div class="product-card" data-category="${prod.category}">
+                <img src="${imgSrc}" alt="${prod.name}">
+                <h3>${prod.name}</h3>
+                <p class="price">$${firstPrice}</p>
+                <select onchange="updatePrice(this, '${encodeURIComponent(JSON.stringify(prod))}')">
+                    ${optionsHtml}
+                </select>
+                <button onclick="addToCart(this)">Agregar</button>
+            </div>
         `;
-      });
-    }
+    });
+}
+
 
     function updatePrice(select, prodStr) {
       const prod = JSON.parse(decodeURIComponent(prodStr));
@@ -291,3 +313,4 @@
   </script>
 </body>
 </html>
+
