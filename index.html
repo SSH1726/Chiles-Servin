@@ -164,45 +164,58 @@ function renderProducts(products) {
         let optionsHtml = '';
         let firstPrice = '';
         
-        // Detectar si está activo el código de descuento
-        const descuentoActivo = window.codigoDescuentoActivo === true;
+       // Detectar si hay código ESPECIAL activo
+const isSpecial = descuentoActivo && +prod.precioEspecial > 0;
 
-        // Usar precios especiales si aplica
-        const precioKg = descuentoActivo && prod.precioEspecial ? prod.precioEspecial : prod.precio;
-        const precioCostal = descuentoActivo && prod.precioEspecial ? prod.precioEspecial : prod.precioCostal;
-        const precioPz = descuentoActivo && prod.precioEspecial ? prod.precioEspecial : prod.precioPz;
-        const precioCaja = descuentoActivo && prod.precioEspecial ? prod.precioEspecial : prod.precioCaja;
-        const precioCubeta = descuentoActivo && prod.precioEspecial ? prod.precioEspecial : prod.precioCubeta;
+// Precios por unidad (solo el kg usa el especial)
+const pKg     = isSpecial ? +prod.precioEspecial : +prod.precioKg;
+const pCostal = +prod.precioCostalCaja; // NO usar especial
+const pPz     = +prod.precioPz;         // NO usar especial
+const pCaja   = +prod.precioCaja;       // NO usar especial
+const pCubeta = +prod.precioCubeta;     // NO usar especial
 
-        // Opciones dinámicas
-        if (prod.porKg) {
-            optionsHtml += `<option value="kg">1 kg ($${precioKg})</option>`;
-            firstPrice = precioKg;
-        }
-        if (prod.porCostal) {
-            const pesoTexto = prod.pesoCostal ? ` (${prod.pesoCostal} kg)` : '';
-            optionsHtml += `<option value="costal">Costal${pesoTexto} ($${precioCostal})</option>`;
-            if (!firstPrice) firstPrice = precioCostal;
-        }
-        if (prod.porPz) {
-            optionsHtml += `<option value="pieza">Pieza ($${precioPz})</option>`;
-            if (!firstPrice) firstPrice = precioPz;
-        }
-        if (prod.porCaja) {
-            const pesoTexto = prod.pesoCostal ? ` (${prod.pesoCostal} kg)` : '';
-            optionsHtml += `<option value="caja">Caja${pesoTexto} ($${precioCaja})</option>`;
-            if (!firstPrice) firstPrice = precioCaja;
-        }
-        if (prod.porCubeta) {
-            optionsHtml += `<option value="cubeta">Cubeta ($${precioCubeta})</option>`;
-            if (!firstPrice) firstPrice = precioCubeta;
-        }
+let optionsHtml = '';
+let firstPrice = '';
 
-        // Fallback por si no hay opciones
-        if (!optionsHtml) {
-            optionsHtml = `<option value="unico">Precio único ($${precioKg})</option>`;
-            firstPrice = precioKg;
-        }
+// KG
+if (prod.porKg) {
+  optionsHtml += `<option value="kg">1 kg ($${pKg.toFixed(2)})</option>`;
+  firstPrice = pKg.toFixed(2);
+}
+
+// COSTAL
+if (prod.porCostal) {
+  const pesoTexto = prod.pesoCostalCaja ? ` (${prod.pesoCostalCaja} kg)` : '';
+  optionsHtml += `<option value="costal">Costal${pesoTexto} ($${pCostal.toFixed(2)})</option>`;
+  if (!firstPrice) firstPrice = pCostal.toFixed(2);
+}
+
+// PIEZA
+if (prod.porPz) {
+  optionsHtml += `<option value="pieza">Pieza ($${pPz.toFixed(2)})</option>`;
+  if (!firstPrice) firstPrice = pPz.toFixed(2);
+}
+
+// CAJA (usa “pz” si también se vende por pieza)
+if (prod.porCaja) {
+  const unidad = (prod.porPz ? 'pz' : 'kg');
+  const sufijo = prod.pesoCostalCaja ? ` (${prod.pesoCostalCaja} ${unidad})` : '';
+  optionsHtml += `<option value="caja">Caja${sufijo} ($${pCaja.toFixed(2)})</option>`;
+  if (!firstPrice) firstPrice = pCaja.toFixed(2);
+}
+
+// CUBETA
+if (prod.porCubeta) {
+  optionsHtml += `<option value="cubeta">Cubeta ($${pCubeta.toFixed(2)})</option>`;
+  if (!firstPrice) firstPrice = pCubeta.toFixed(2);
+}
+
+// Fallback
+if (!optionsHtml) {
+  optionsHtml = `<option value="unico">Precio único ($${pKg.toFixed(2)})</option>`;
+  firstPrice = pKg.toFixed(2);
+}
+
 
         // Imagen con respaldo
         const imgSrc = prod.image && prod.image.startsWith('http') 
@@ -313,4 +326,5 @@ function renderProducts(products) {
   </script>
 </body>
 </html>
+
 
